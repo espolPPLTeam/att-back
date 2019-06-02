@@ -1,0 +1,27 @@
+{
+  "name": "att-back",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:espolPPLTeam/att-back.git",
+  "author": "Joel Rodriguez <joelerll@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development env-cmd nodemon server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-jwt": "^5.3.1",
+    "morgan": "^1.9.1",
+    "redis": "^2.8.0",
+    "sequelize": "^5.8.7",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "cross-env": "^5.2.0",
+    "env-cmd": "^9.0.2",
+    "nodemon": "^1.19.1",
+    "sequelize-cli": "^5.4.0"
+  }
+}
