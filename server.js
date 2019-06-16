@@ -1,17 +1,25 @@
 const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser");
+const morgan = require('morgan');
 
 const PORT = process.env.SERVER_PORT;
 
 const initServer = async() => {
   try {
     const app = express();
+    
     app.use(cors());
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({
       extended: false,
       limit   : '10mb'
+    }));
+
+    // Request logger
+    const winstonLogger = require("./server/modules/logger/winstonLogger");
+    app.use(morgan("dev", {
+      stream: winstonLogger.stream
     }));
 
     // Database connection

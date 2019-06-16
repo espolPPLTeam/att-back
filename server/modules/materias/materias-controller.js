@@ -1,6 +1,7 @@
 async function getAll() {
   try {
-    return Promise.resolve(global.mysqlDB.Materia.findAll());
+    //return Promise.resolve(global.mysqlDB.Materia.findAll());
+    return Promise.reject("asdfg")
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
