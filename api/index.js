@@ -1,15 +1,7 @@
+"use strict";
 const express = require("express");
+const app = express();
 
-const { wrap } = require("../lib/utils");
+require("./materias")(app);
 
-const router = express.Router();
-
-router.get(
-    "/ping",
-    wrap((req, res) => {
-        res.send("hello");
-    })
-);
-// express-jwt
-// morgan
-module.exports = router;
+module.exports = app;

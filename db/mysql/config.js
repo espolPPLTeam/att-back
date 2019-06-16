@@ -1,25 +1,24 @@
-const { MYSQL_DATABASE, MYSQL_USER, MYSQL_ROOT_PASSWORD, MYSQL_HOSTNAME } = require("../../constants");
 module.exports = {
-    development: {
-        username: MYSQL_USER,
-        password: MYSQL_ROOT_PASSWORD,
-        database: MYSQL_DATABASE,
-        host: MYSQL_HOSTNAME,
-        logging: false,
-        dialect: "mysql",
-    },
-    test: {
-        dialect: "sqlite",
-        storage: ":memory:",
-        logging: false,
-        operatorsAliases: false,
-    },
-    production: {
-        username: MYSQL_USER,
-        password: MYSQL_ROOT_PASSWORD,
-        database: MYSQL_DATABASE,
-        host: MYSQL_HOSTNAME,
-        logging: false,
-        dialect: "mysql",
-    },
+  development: {
+    username: process.env.MYSQL_USER,
+    password: process.env.MYSQL_ROOT_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    host: process.env.MYSQL_HOSTNAME,
+    logging: false,
+    dialect: "mysql",
+  },
+  test: {
+    dialect: "sqlite",
+    storage: ":memory:",
+    logging: false,
+    operatorsAliases: false,
+  },
+  production: {
+    username: process.env.MYSQL_USER,
+    password: process.env.MYSQL_ROOT_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    host: process.env.MYSQL_HOSTNAME,
+    logging: false,
+    dialect: "mysql",
+  },
 };

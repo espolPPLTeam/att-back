@@ -2,20 +2,38 @@ const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const { PORT } = require("./constants");
-const api = require("./api");
+const PORT = process.env.SERVER_PORT;
 
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
+const initServer = async() => {
+  try {
+    const app = express();
+    app.use(cors());
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({
+      extended: false,
+      limit   : '10mb'
+    }));
 
-app.use("/api", api);
+    // Database connection
+    const databases = require("./db");
+    const mysqlDB = await databases.Mysql.connect();
+    global.mysqlDB = mysqlDB;
 
-// Error handling middleware
-// app.use((err, req, res, next) => {
-//     return next(err, req, res, next);
-// }, handleErrors);
+    // API routes registration is handled in the api index 
+    const api = require("./api");
+    app.use("/api/att", api);
 
-app.listen(PORT, function() {
-    console.log(`Server listening on port http://localhost:${PORT}`);
-});
+    // Error handling middleware
+    // app.use((err, req, res, next) => {
+    //     return next(err, req, res, next);
+    // }, handleErrors);
+
+    app.listen(PORT, function() {
+      console.log(`Server listening on port http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Unable to start server", error);
+  }
+};
+
+initServer();
