@@ -25,7 +25,6 @@ const initServer = async() => {
     // Database connection
     const databases = require("./db");
     const mysqlDB = await databases.Mysql.connect();
-    global.mysqlDB = mysqlDB;
 
     // API routes registration is handled in the api index 
     const api = require("./server/index");

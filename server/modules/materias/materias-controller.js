@@ -1,7 +1,9 @@
+const mysqlService = require("../database-services/mysql-service");
+
 async function getAll() {
   try {
-    //return Promise.resolve(global.mysqlDB.Materia.findAll());
-    return Promise.reject("asdfg")
+    const materias = await mysqlService.findAll("Materia", {}, {}, 10, 0);
+    return Promise.resolve(materias);
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
@@ -16,7 +18,7 @@ async function getAll() {
   */
 async function create(dataMateria) {
   try {
-    const data = await global.mysqlDB.Materia.create(dataMateria);
+    const data = await mysqlService.createRegister("Materia", dataMateria);
     return Promise.resolve(data);
   } catch (error) {
     console.error(error);
