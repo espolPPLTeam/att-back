@@ -2,6 +2,6 @@
 const express = require("express");
 const app = express();
 
-require("./materias")(app);
+require("./modules/materias")(app);
 
 module.exports = app;

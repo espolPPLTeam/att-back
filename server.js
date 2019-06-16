@@ -20,7 +20,7 @@ const initServer = async() => {
     global.mysqlDB = mysqlDB;
 
     // API routes registration is handled in the api index 
-    const api = require("./api");
+    const api = require("./server/index");
     app.use("/api/att", api);
 
     // Error handling middleware
