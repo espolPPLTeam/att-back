@@ -1,5 +1,8 @@
 const mysqlService = require("../database-services/mysql-service");
 
+/**
+  * Get all registers in the table Materias
+  */
 async function getAll() {
   try {
     const materias = await mysqlService.findAll("Materia", {}, {}, 10, 0);
@@ -11,10 +14,10 @@ async function getAll() {
 };
 
 /**
-  * Crea un registro de Materia en la tabla materias
-  * @param {Object} dataMateria Campos requeridos de la tabla para el registro
-  * @param {String} dataMateria.nombre Nombre de la materia
-  * @param {String} dataMateria.codigo Codigo de la materia
+  * Creates a register in the table Materias
+  * @param {Object} dataMateria Required fields for the table
+  * @param {String} dataMateria.nombre Name of the subject
+  * @param {String} dataMateria.codigo Subject's code
   */
 async function create(dataMateria) {
   try {

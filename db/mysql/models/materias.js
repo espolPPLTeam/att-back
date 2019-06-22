@@ -8,7 +8,16 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       tableName: "materias",
+      underscored: true,
+      name: {
+        singular: "materia",
+        plural: "materias"
+      },
+      sequelize
     }
   );
+  Materia.associate = (models) => {
+    Materia.hasMany(models.Paralelo);
+  };
   return Materia;
 };

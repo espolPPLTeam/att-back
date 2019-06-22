@@ -1,0 +1,34 @@
+"use strict";
+module.exports = (sequelize, DataTypes) => {
+  let Sesion = sequelize.define(
+    "Sesion",
+    {
+      nombre: DataTypes.STRING,
+      activo: DataTypes.BOOLEAN,
+      fecha_fin: DataTypes.DATE,
+      fecha_inicio: DataTypes.DATE
+    },
+    {
+      tableName: "sesiones",
+      underscored: true,
+      name: {
+        singular: "sesion",
+        plural: "sesiones"
+      },
+      sequelize,
+    }
+  );
+
+  Sesion.associate = (models) => {
+    Sesion.belongsTo(models.Paralelo);
+    Sesion.belongsToMany(models.EstadoSesion, { through: models.ActualizacionEstado });
+    Sesion.belongsTo(models.EstadoSesion, {
+      as: "Actual",
+      foreignKey: "estado_actual_id",
+      constraints: false
+    });
+    Sesion.belongsToMany(models.Usuario, { through: models.UsuarioSesion });
+    Sesion.hasMany(models.PreguntaEstudiante);
+  };
+  return Sesion;
+};
