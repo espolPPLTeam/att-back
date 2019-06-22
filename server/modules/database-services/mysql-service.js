@@ -19,8 +19,8 @@ const db = Mysql.db;
     return db[model].findAll({
       where: query,
       attributes: projection,
-      offset: offset,
-      limit: limit,
+      offset: Number(offset),
+      limit: Number(limit),
     });
   }
 
@@ -40,8 +40,8 @@ const db = Mysql.db;
       include: associations,
       where: query,
       attributes: projection,
-      offset: offset,
-      limit: limit,
+      offset: Number(offset),
+      limit: Number(limit),
     });
   }
 
