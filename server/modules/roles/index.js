@@ -4,7 +4,6 @@ module.exports = (app) => {
   app.route("/roles")
     .get(async (req, res) => {
       try {
-        console.log(req.query);
         const data = await rolesController.obtenerRoles(req.query.limit, req.query.offset);
         res.send({ status: 200, data });
       } catch (error) {

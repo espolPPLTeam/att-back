@@ -1,5 +1,5 @@
-const mysqlService = require("../database-services/mysql-service");
-
+const { Mysql } = require("./../../../db");
+const db = Mysql.db;
 
 /**
   * Metodo para crear el registro de un Rol en la base de datos
@@ -7,7 +7,7 @@ const mysqlService = require("../database-services/mysql-service");
 async function crearRol(nombre) {
   try {
     const data = { nombre };
-    const rol = await mysqlService.createRegister("Rol", data);
+    const rol = await db["Rol"].create(data);
     return Promise.resolve(rol);
   } catch (error) {
     return Promise.reject(error);
@@ -27,7 +27,11 @@ async function obtenerRoles(limit, offset, query) {
     if (!offset) {
       offset = 0;
     }
-    const roles = await mysqlService.findAll("Rol", query, {}, limit, offset);
+    const roles = await db["Rol"].findAll({
+      where: query,
+      offset: Number(offset),
+      limit: Number(limit)
+    });
     return Promise.resolve(roles);
   } catch (error) {
     return Promise.reject(error);
