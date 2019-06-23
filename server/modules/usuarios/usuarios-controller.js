@@ -1,6 +1,8 @@
 const { Mysql } = require("./../../../db");
 const db = Mysql.db;
 
+const utils = require("../../utils");
+
 /**
   * Metodo para crear un registro de estudiante en la base de datos,
   * junto con todos sus registros en sus tablas asociadas
@@ -18,10 +20,12 @@ async function crearEstudiante(datosUsuario) {
       nombres: datosUsuario.nombres,
       apellidos: datosUsuario.apellidos,
       email: datosUsuario.email,
-      clave: datosUsuario.clave,
       matricula: datosUsuario.matricula,
       estado: "ACTIVO",
     };
+    const hashedPassword = utils.hashPassword(datosUsuario.clave);
+    estudiante["clave"] = hashedPassword;
+    
     const usuario = await db["Usuario"].create(estudiante);
     // Luego anado su foreign key de rol_id
     const rolQuery = { nombre: "estudiante" };
