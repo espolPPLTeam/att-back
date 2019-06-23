@@ -1,4 +1,5 @@
-const mysqlService = require("../database-services/mysql-service");
+const { Mysql } = require("./../../../db");
+const db = Mysql.db;
 
 /**
   * Metodo para crear un registro de estudiante en la base de datos,
@@ -12,10 +13,7 @@ const mysqlService = require("../database-services/mysql-service");
   */
 async function crearEstudiante(datosUsuario) {
   try {
-    // Primero obtener el rol de "estudiante"
-    const rolQuery = { nombre: "estudiante" };
-    const rolEstudiante = await mysqlService.findOne("Rol", rolQuery, {});
-    // Crear registro de usuario
+    // Primero creo registro de usuario
     const estudiante = {
       nombres: datosUsuario.nombres,
       apellidos: datosUsuario.apellidos,
@@ -23,10 +21,15 @@ async function crearEstudiante(datosUsuario) {
       clave: datosUsuario.clave,
       matricula: datosUsuario.matricula,
       estado: "ACTIVO",
-      rol_id: rolEstudiante.id
     };
-    console.log(estudiante)
-    const usuario = await mysqlService.createRegister("Usuario", estudiante);
+    const usuario = await db["Usuario"].create(estudiante);
+    // Luego anado su foreign key de rol_id
+    const rolQuery = { nombre: "estudiante" };
+    const rolEstudiante = await db["Rol"].findOne({
+      where: rolQuery
+    });
+    await rolEstudiante.addUsuario(usuario);
+    
     return Promise.resolve(usuario);
   } catch (error) {
     console.error(error);
