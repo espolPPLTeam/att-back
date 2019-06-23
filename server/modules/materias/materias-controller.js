@@ -1,11 +1,23 @@
-const mysqlService = require("../database-services/mysql-service");
+const { Mysql } = require("./../../../db");
+const db = Mysql.db;
 
 /**
   * Get all registers in the table Materias
+  * @param {Number} limit Limite de resultados a mostrar
+  * @param {Number} offset Numero de resultados a saltarse de la busqueda
   */
-async function getAll() {
+async function obtenerMaterias(limit, offset) {
   try {
-    const materias = await mysqlService.findAll("Materia", {}, {}, 10, 0);
+    if (!limit) {
+      limit = 10;
+    }
+    if (!offset) {
+      offset = 0;
+    }
+    const materias = await db["Materia"].findAll({
+      offset: Number(offset),
+      limit: Number(limit)
+    });
     return Promise.resolve(materias);
   } catch (error) {
     console.error(error);
@@ -19,9 +31,12 @@ async function getAll() {
   * @param {String} dataMateria.nombre Name of the subject
   * @param {String} dataMateria.codigo Subject's code
   */
-async function create(dataMateria) {
+async function crearMateria(dataMateria) {
   try {
-    const data = await mysqlService.createRegister("Materia", dataMateria);
+    const data = await db["Materia"].create({
+      nombre: dataMateria.nombre,
+      codigo: dataMateria.codigo
+    });
     return Promise.resolve(data);
   } catch (error) {
     console.error(error);
@@ -30,6 +45,6 @@ async function create(dataMateria) {
 };
 
 module.exports = {
-  getAll,
-  create
+  obtenerMaterias,
+  crearMateria
 };
