@@ -25,7 +25,7 @@ async function crearEstudiante(datosUsuario) {
     };
     const hashedPassword = utils.hashPassword(datosUsuario.clave);
     estudiante["clave"] = hashedPassword;
-    
+
     const usuario = await db["Usuario"].create(estudiante);
     // Luego anado su foreign key de rol_id
     const rolQuery = { nombre: "estudiante" };
@@ -33,6 +33,13 @@ async function crearEstudiante(datosUsuario) {
       where: rolQuery
     });
     await rolEstudiante.addUsuario(usuario);
+    
+    if (datosUsuario.paralelo) {
+      const paralelo = await db["ParaleloUsuario"].findOne(paraleloQuery);
+      if (paralelo) {
+        await usuario.addParalelo(datosUsuario.idParalelo);
+      }
+    }
     
     return Promise.resolve(usuario);
   } catch (error) {
@@ -42,5 +49,6 @@ async function crearEstudiante(datosUsuario) {
 };
 
 module.exports = {
-  crearEstudiante
+  crearEstudiante,
+  anadirAParalelo
 };
