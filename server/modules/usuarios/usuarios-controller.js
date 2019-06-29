@@ -34,8 +34,11 @@ async function crearEstudiante(datosUsuario) {
     });
     await rolEstudiante.addUsuario(usuario);
     
-    if (datosUsuario.paralelo) {
-      const paralelo = await db["ParaleloUsuario"].findOne(paraleloQuery);
+    if (datosUsuario.idParalelo) {
+      const paraleloQuery = { id: datosUsuario.idParalelo };
+      const paralelo = await db["Paralelo"].findOne({
+        where: paraleloQuery
+      });
       if (paralelo) {
         await usuario.addParalelo(datosUsuario.idParalelo);
       }
