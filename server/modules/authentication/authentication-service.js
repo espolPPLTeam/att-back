@@ -43,8 +43,22 @@ function createToken(id, email, rol) {
   return token;
 };
 
+/**
+  * Obtiene el payload codificado en un token
+  * @param {String} token Token a decodificar
+  */
+function decodeToken(token) {
+  try {
+    const data = jwt.verify(token, SECRET);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   hashPassword,
   comparePassword,
-  createToken
+  createToken.
+  decodeToken
 };
