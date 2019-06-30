@@ -6,7 +6,8 @@
   "author": "Joel Rodriguez <joelerll@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development env-cmd nodemon server.js"
+    "dev": "cross-env NODE_ENV=development env-cmd nodemon server.js",
+    "populateDB:dev": "cross-env NODE_ENV=development env-cmd node scripts/populateDB"
   },
   "dependencies": {
     "bcrypt": "^3.0.6",
