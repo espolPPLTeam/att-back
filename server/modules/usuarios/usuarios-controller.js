@@ -61,15 +61,7 @@ async function crearEstudiante(datosUsuario) {
 async function login(email, clave) {
   try {
     // Buscar usuario
-    const usuarioQuery = { email: email };
-    const usuarioProjection = ["id", "email", "clave", "rolId"];
-    const usuario = await db["Usuario"].findOne({
-      where: usuarioQuery,
-      attributes: usuarioProjection,
-      include: [{
-        model: db["Rol"]
-      }]
-    });
+    const usuario = await getDatosUsuario(email);
     if (!usuario) {
       return Promise.reject("Usuario no encontrado");
     }
@@ -81,10 +73,54 @@ async function login(email, clave) {
     // Generar token
     const token = authenticationService.createToken(usuario.id, usuario.email, usuario.rol.nombre);
 
-    return Promise.resolve(token);
+    let datos = Object.assign({}, usuario.dataValues);
+
+    datos["token"] = token;
+    delete datos["clave"];
+
+    return Promise.resolve(datos);
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
+  }
+};
+
+/**
+  * Obtiene los datos del usuario necesarios para la primera carga de la alicacion
+  * @param {String} email Email del usuario
+  */
+async function getDatosUsuario(email) {
+  try {
+    // Buscar usuario
+    const usuarioQuery = { email: email };
+    /** Campos a mostrar del usuario */
+    const usuarioProjection = ["id", "email", "rolId", "clave"];
+    /** Campos a mostrar del rol del usuario */
+    const rolProjection = ["nombre"];
+    /** Campos a mostrar del paralelo del usuario */
+    const paraleloProjection = ["id", "nombre", "codigo"];
+    const usuario = await db["Usuario"].findOne({
+      where: usuarioQuery,
+      attributes: usuarioProjection,
+      include: [
+        {
+          model: db["Rol"],
+          attributes: rolProjection
+        },
+        {
+          model: db["Paralelo"],
+          attributes: paraleloProjection
+        }
+      ]
+    });
+    if (!usuario) {
+      return Promise.reject("Usuario no encontrado");
+    }
+
+    return Promise.resolve(usuario);
+  } catch (error) {
+    console.error(error);
+    return Promie.reject(error);
   }
 };
 
