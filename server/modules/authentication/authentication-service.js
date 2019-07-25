@@ -59,6 +59,6 @@ function decodeToken(token) {
 module.exports = {
   hashPassword,
   comparePassword,
-  createToken.
+  createToken,
   decodeToken
 };

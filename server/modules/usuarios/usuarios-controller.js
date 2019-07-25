@@ -52,6 +52,54 @@ async function crearEstudiante(datosUsuario) {
 };
 
 /**
+  * Metodo para crear un registro de profesor en la base de datos,
+  * junto con todos sus registros en sus tablas asociadas
+  * @param {Object} datosUsuario
+  * @param {String} datosUsuario.nombres Nombres del profesor
+  * @param {String} datosUsuario.apellidos Apellidos del profesor
+  * @param {String} datosUsuario.email Email con el cual el profesor hara login en la app
+  * @param {String} datosUsuario.clave Clave con la cual el profesor hara login en la app
+  * @param {String} datosUsuario.matricula Identificacion del profesor
+  */
+async function crearProfesor(datosUsuario) {
+  try {
+    // Primero creo registro de usuario
+    const profesor = {
+      nombres: datosUsuario.nombres,
+      apellidos: datosUsuario.apellidos,
+      email: datosUsuario.email,
+      matricula: datosUsuario.matricula,
+      estado: "ACTIVO",
+    };
+    const hashedPassword = authenticationService.hashPassword(datosUsuario.clave);
+    profesor["clave"] = hashedPassword;
+
+    const usuario = await db["Usuario"].create(profesor);
+    // Luego anado su foreign key de rol_id
+    const rolQuery = { nombre: "profesor" };
+    const rolProfesor = await db["Rol"].findOne({
+      where: rolQuery
+    });
+    await rolProfesor.addUsuario(usuario);
+    
+    if (datosUsuario.idParalelo) {
+      const paraleloQuery = { id: datosUsuario.idParalelo };
+      const paralelo = await db["Paralelo"].findOne({
+        where: paraleloQuery
+      });
+      if (paralelo) {
+        await usuario.addParalelo(datosUsuario.idParalelo);
+      }
+    }
+    
+    return Promise.resolve(usuario);
+  } catch (error) {
+    console.error(error);
+    return Promise.reject(error);
+  }
+};
+
+/**
   * Busca al usuario por su email y compara las contrasennas
   * Genera el token de autenticacion
   * @param {String} email Email ingresado por el usuario
@@ -126,5 +174,6 @@ async function getDatosUsuario(email) {
 
 module.exports = {
   crearEstudiante,
+  crearProfesor,
   login
 };
