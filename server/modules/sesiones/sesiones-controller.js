@@ -43,10 +43,43 @@ async function obtenerSesiones() {
 
 };
 
-async function iniciarSesion() {};
+/**
+  * Da por iniciada una sesion previamente creada
+  *
+  * @param {Object} datosSesion
+  * @param {Number} datosSesion.idSesion ID de la sesion a iniciar
+  */
+async function iniciarSesion(datosSesion) {
+  try {
+    const sesionQuery = { id: datosSesion.idSesion };
+    const sesion = await db["Sesion"].findOne({ where: sesionQuery });
+    if (!sesion) {
+      return Promise.reject("Sesion no existe");
+    }
+    if (sesion.get("estado_actual_id") == 3) {
+      return Promise.reject("Sesion finalizada. No se puede actualizar");
+    }
+
+    const estadoQuery = { nombre: "ACTIVA" };
+    const estado = await db["EstadoSesion"].findOne({ where: estadoQuery });
+
+    await sesion.update({
+      estado_actual_id: estado.id,
+      fecha_inicio: new Date()
+    });
+
+    await sesion.addActualizacionesEstado(estado.id);
+
+    return Promise.resolve(sesion);
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+};
 
 async function terminarSesion() {};
 
 module.exports = {
   crearSesion,
+  iniciarSesion
 };

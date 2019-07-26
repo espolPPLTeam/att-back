@@ -21,7 +21,10 @@ module.exports = (sequelize, DataTypes) => {
 
   Sesion.associate = (models) => {
     Sesion.belongsTo(models.Paralelo);
-    Sesion.belongsToMany(models.EstadoSesion, { through: models.ActualizacionEstado });
+    Sesion.belongsToMany(models.EstadoSesion, {
+      through: models.ActualizacionEstado,
+      as: "ActualizacionesEstado"
+    });
     Sesion.belongsTo(models.EstadoSesion, {
       as: "Actual",
       foreignKey: "estado_actual_id",
