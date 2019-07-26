@@ -6,6 +6,7 @@ const materiasController = require("../server/modules/materias/materias-controll
 const terminosController = require("../server/modules/terminos/terminos-controller");
 const paralelosController = require("../server/modules/paralelos/paralelos-controller");
 const rolesController = require("../server/modules/roles/roles-controller");
+const estadosSesionesController = require("../server/modules/estados-sesiones/estadosSesiones-controller");
 
 const databases = require("../db");
 
@@ -32,6 +33,10 @@ async function init() {
       paralelo["idTermino"] = terminoActual;
       await paralelosController.crearParalelo(paralelo);
     }
+  }
+
+  for (let estado of data.estadosSesion) {
+    await estadosSesionesController.crearEstado(estado);
   }
 };
 
