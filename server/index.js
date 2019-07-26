@@ -9,5 +9,6 @@ require("./modules/roles")(app);
 require("./modules/usuarios")(app);
 require("./modules/terminos")(app);
 require("./modules/paralelos")(app);
+require("./modules/sesiones")(app);
 
 module.exports = app;
