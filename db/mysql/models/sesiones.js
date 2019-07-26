@@ -28,6 +28,11 @@ module.exports = (sequelize, DataTypes) => {
       constraints: false
     });
     Sesion.belongsToMany(models.Usuario, { through: models.UsuarioSesion });
+    Sesion.belongsTo(models.Usuario, {
+      as: "Registrador",
+      foreignKey: "usuario_registro",
+      constraints: false
+    });
     Sesion.hasMany(models.PreguntaEstudiante);
   };
   return Sesion;

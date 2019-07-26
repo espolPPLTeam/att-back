@@ -8,8 +8,10 @@ const db = Mysql.db;
   * @param {Object} datosSesion
   * @param {Number} datosSesion.idParalelo ID del paralelo al que pertenece la sesion
   * @param {String} datosSesion.nombre Nombre de la sesion a crear
+  * @param {Object} datosUsuario
+  * @param {Number} datosUsuario.id Id del usuario que crea la sesion
   */
-async function crearSesion(datosSesion) {
+async function crearSesion(datosSesion, datosUsuario) {
   try {
     const paraleloQuery = { id: datosSesion.idParalelo };
     const paralelo = await db["Paralelo"].findOne({ where: paraleloQuery });
@@ -28,6 +30,7 @@ async function crearSesion(datosSesion) {
 
     sesion.setParalelo(paralelo.id);
     sesion.setActual(estado.id);
+    sesion.setRegistrador(datosUsuario.id);
 
     return Promise.resolve(sesion);
   } catch (error) {
