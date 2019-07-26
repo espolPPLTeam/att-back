@@ -1,6 +1,9 @@
 const { Mysql } = require("./../../../db");
 const db = Mysql.db;
 
+/** ID del estado de una sesion terminada */
+const SESION_TERMINADA = 3;
+
 /**
   * Crea un registro de una sesion en esato PENDIENTE
   * Una sesion pertenece a un paralelo
@@ -56,7 +59,7 @@ async function iniciarSesion(datosSesion) {
     if (!sesion) {
       return Promise.reject("Sesion no existe");
     }
-    if (sesion.get("estado_actual_id") == 3) {
+    if (sesion.get("estado_actual_id") == SESION_TERMINADA) {
       return Promise.reject("Sesion finalizada. No se puede actualizar");
     }
 
@@ -77,9 +80,42 @@ async function iniciarSesion(datosSesion) {
   }
 };
 
-async function terminarSesion() {};
+/**
+  * Da por finalizada una sesion previamente creada
+  *
+  * @param {Object} datosSesion
+  * @param {Number} datosSesion.idSesion ID de la sesion a iniciar
+  */
+async function terminarSesion(datosSesion) {
+  try {
+    const sesionQuery = { id: datosSesion.idSesion };
+    const sesion = await db["Sesion"].findOne({ where: sesionQuery });
+    if (!sesion) {
+      return Promise.reject("Sesion no existe");
+    }
+    if (sesion.get("estado_actual_id") == SESION_TERMINADA) {
+      return Promise.reject("Sesion finalizada. No se puede actualizar");
+    }
+
+    const estadoQuery = { nombre: "TERMINADA" };
+    const estado = await db["EstadoSesion"].findOne({ where: estadoQuery });
+
+    await sesion.update({
+      estado_actual_id: estado.id,
+      fecha_fin: new Date()
+    });
+
+    await sesion.addActualizacionesEstado(estado.id);
+
+    return Promise.resolve(sesion);
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+};
 
 module.exports = {
   crearSesion,
-  iniciarSesion
+  iniciarSesion,
+  terminarSesion
 };
