@@ -32,7 +32,7 @@ async function crearSesion(datosSesion, datosUsuario) {
     const sesion = await db["Sesion"].create(data);
 
     sesion.setParalelo(paralelo.id);
-    sesion.setActual(estado.id);
+    sesion.setSesionActual(estado.id);
     sesion.setRegistrador(datosUsuario.id);
 
     return Promise.resolve(sesion);

@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       as: "ActualizacionesEstado"
     });
     Sesion.belongsTo(models.EstadoSesion, {
-      as: "Actual",
+      as: "sesionActual",
       foreignKey: "estado_actual_id",
       constraints: false
     });
