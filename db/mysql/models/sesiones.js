@@ -32,11 +32,15 @@ module.exports = (sequelize, DataTypes) => {
     });
     Sesion.belongsToMany(models.Usuario, { through: models.UsuarioSesion });
     Sesion.belongsTo(models.Usuario, {
-      as: "Registrador",
+      as: "registrador",
       foreignKey: "usuario_registro",
       constraints: false
     });
+
     Sesion.hasMany(models.PreguntaEstudiante);
+    Sesion.hasMany(models.PreguntaProfesor, {
+      as: "preguntasProfesor"
+    });
   };
   return Sesion;
 };

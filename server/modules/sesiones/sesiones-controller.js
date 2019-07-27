@@ -114,8 +114,64 @@ async function terminarSesion(datosSesion) {
   }
 };
 
+
+/**
+  * Devuelve los datos de preguntas de una sesion
+  *
+  * @param {Object} datosSesion
+  * @param {Number} datosSesion.idSesion
+  */
+async function obtenerDatosSesion(datosSesion, datosUsuario) {
+  try {
+    const sesionQuery = { id: datosSesion.idSesion };
+    const sesionProjection = ["nombre", "fecha_inicio", "fecha_fin"];
+    const usuarioProjection = ["id", "nombres", "apellidos", "email"];
+    const sesionPopulate = [
+      {
+        model: db["Paralelo"],
+        attributes: ["nombre", "codigo", "id"]
+      },
+      {
+        model: db["Usuario"],
+        as: "registrador",
+        attributes: usuarioProjection
+      },
+      {
+        model: db["PreguntaProfesor"],
+        as: "preguntasProfesor",
+        attributes: ["id", "texto", "imagen", "createdAt"],
+        include: [
+          {
+            model: db["Usuario"],
+            as: "creador",
+            attributes: usuarioProjection
+          }
+        ]
+      },
+      {
+        model: db["EstadoSesion"],
+        as: "sesionActual",
+        attributes: ["id", "nombre"]
+      }
+    ];
+    const sesion = await db["Sesion"].findOne({
+      where: sesionQuery,
+      attributes: sesionProjection,
+      include: sesionPopulate
+    });
+    if (!sesion) {
+      return Promise.reject("Sesion no existe");
+    }
+    return Promise.resolve(sesion);
+  } catch (error) {
+    console.error(error);
+    return Promise.reject(error);
+  }
+}
+
 module.exports = {
   crearSesion,
   iniciarSesion,
-  terminarSesion
+  terminarSesion,
+  obtenerDatosSesion
 };
