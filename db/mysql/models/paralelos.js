@@ -23,6 +23,11 @@ module.exports = (sequelize, DataTypes) => {
     Paralelo.hasMany(models.Grupo);
     Paralelo.belongsToMany(models.Usuario, { through: models.ParaleloUsuario });
     Paralelo.hasMany(models.Sesion);
+    Paralelo.belongsTo(models.Usuario, {
+      as: "usuarioRegistro",
+      foreignKey: "usuario_registro",
+      constraints: false
+    });
   };
   return Paralelo;
 };

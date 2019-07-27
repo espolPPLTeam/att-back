@@ -16,14 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `att_develop`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `att_develop` /*!40100 DEFAULT CHARACTER SET latin1 */;
-
-USE `att_develop`;
-
---
 -- Table structure for table `actualizaciones_estado`
 --
 
@@ -43,15 +35,6 @@ CREATE TABLE `actualizaciones_estado` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `actualizaciones_estado`
---
-
-LOCK TABLES `actualizaciones_estado` WRITE;
-/*!40000 ALTER TABLE `actualizaciones_estado` DISABLE KEYS */;
-/*!40000 ALTER TABLE `actualizaciones_estado` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `estados_sesion`
 --
 
@@ -64,17 +47,8 @@ CREATE TABLE `estados_sesion` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `estados_sesion`
---
-
-LOCK TABLES `estados_sesion` WRITE;
-/*!40000 ALTER TABLE `estados_sesion` DISABLE KEYS */;
-/*!40000 ALTER TABLE `estados_sesion` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `estudiantes_grupos`
@@ -97,15 +71,6 @@ CREATE TABLE `estudiantes_grupos` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `estudiantes_grupos`
---
-
-LOCK TABLES `estudiantes_grupos` WRITE;
-/*!40000 ALTER TABLE `estudiantes_grupos` DISABLE KEYS */;
-/*!40000 ALTER TABLE `estudiantes_grupos` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `grupos`
 --
 
@@ -122,15 +87,6 @@ CREATE TABLE `grupos` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `grupos`
---
-
-LOCK TABLES `grupos` WRITE;
-/*!40000 ALTER TABLE `grupos` DISABLE KEYS */;
-/*!40000 ALTER TABLE `grupos` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `materias`
 --
 
@@ -144,17 +100,8 @@ CREATE TABLE `materias` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `materias`
---
-
-LOCK TABLES `materias` WRITE;
-/*!40000 ALTER TABLE `materias` DISABLE KEYS */;
-/*!40000 ALTER TABLE `materias` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `paralelos`
@@ -176,17 +123,8 @@ CREATE TABLE `paralelos` (
   KEY `termino_id` (`termino_id`),
   CONSTRAINT `paralelos_ibfk_1` FOREIGN KEY (`materia_id`) REFERENCES `materias` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `paralelos_ibfk_2` FOREIGN KEY (`termino_id`) REFERENCES `terminos` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `paralelos`
---
-
-LOCK TABLES `paralelos` WRITE;
-/*!40000 ALTER TABLE `paralelos` DISABLE KEYS */;
-/*!40000 ALTER TABLE `paralelos` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `paralelos_usuarios`
@@ -206,15 +144,6 @@ CREATE TABLE `paralelos_usuarios` (
   CONSTRAINT `paralelos_usuarios_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `paralelos_usuarios`
---
-
-LOCK TABLES `paralelos_usuarios` WRITE;
-/*!40000 ALTER TABLE `paralelos_usuarios` DISABLE KEYS */;
-/*!40000 ALTER TABLE `paralelos_usuarios` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `preguntas_estudiante`
@@ -244,15 +173,6 @@ CREATE TABLE `preguntas_estudiante` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `preguntas_estudiante`
---
-
-LOCK TABLES `preguntas_estudiante` WRITE;
-/*!40000 ALTER TABLE `preguntas_estudiante` DISABLE KEYS */;
-/*!40000 ALTER TABLE `preguntas_estudiante` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `preguntas_profesor`
 --
 
@@ -272,17 +192,8 @@ CREATE TABLE `preguntas_profesor` (
   KEY `sesion_id` (`sesion_id`),
   CONSTRAINT `preguntas_profesor_ibfk_1` FOREIGN KEY (`creador_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `preguntas_profesor_ibfk_2` FOREIGN KEY (`sesion_id`) REFERENCES `sesiones` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `preguntas_profesor`
---
-
-LOCK TABLES `preguntas_profesor` WRITE;
-/*!40000 ALTER TABLE `preguntas_profesor` DISABLE KEYS */;
-/*!40000 ALTER TABLE `preguntas_profesor` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `profesores_grupos`
@@ -302,15 +213,6 @@ CREATE TABLE `profesores_grupos` (
   CONSTRAINT `profesores_grupos_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `profesores_grupos`
---
-
-LOCK TABLES `profesores_grupos` WRITE;
-/*!40000 ALTER TABLE `profesores_grupos` DISABLE KEYS */;
-/*!40000 ALTER TABLE `profesores_grupos` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `respuestas`
@@ -340,15 +242,6 @@ CREATE TABLE `respuestas` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `respuestas`
---
-
-LOCK TABLES `respuestas` WRITE;
-/*!40000 ALTER TABLE `respuestas` DISABLE KEYS */;
-/*!40000 ALTER TABLE `respuestas` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `roles`
 --
 
@@ -361,17 +254,8 @@ CREATE TABLE `roles` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `roles`
---
-
-LOCK TABLES `roles` WRITE;
-/*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-/*!40000 ALTER TABLE `roles` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `sesiones`
@@ -390,20 +274,12 @@ CREATE TABLE `sesiones` (
   `updated_at` datetime NOT NULL,
   `paralelo_id` int(11) DEFAULT NULL,
   `estado_actual_id` int(11) DEFAULT NULL,
+  `usuario_registro` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `paralelo_id` (`paralelo_id`),
   CONSTRAINT `sesiones_ibfk_1` FOREIGN KEY (`paralelo_id`) REFERENCES `paralelos` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `sesiones`
---
-
-LOCK TABLES `sesiones` WRITE;
-/*!40000 ALTER TABLE `sesiones` DISABLE KEYS */;
-/*!40000 ALTER TABLE `sesiones` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `terminos`
@@ -421,17 +297,8 @@ CREATE TABLE `terminos` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `terminos`
---
-
-LOCK TABLES `terminos` WRITE;
-/*!40000 ALTER TABLE `terminos` DISABLE KEYS */;
-/*!40000 ALTER TABLE `terminos` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `usuarios`
@@ -454,17 +321,8 @@ CREATE TABLE `usuarios` (
   PRIMARY KEY (`id`),
   KEY `rol_id` (`rol_id`),
   CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `usuarios`
---
-
-LOCK TABLES `usuarios` WRITE;
-/*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-/*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `usuarios_sesion`
@@ -488,15 +346,6 @@ CREATE TABLE `usuarios_sesion` (
   CONSTRAINT `usuarios_sesion_ibfk_3` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `usuarios_sesion`
---
-
-LOCK TABLES `usuarios_sesion` WRITE;
-/*!40000 ALTER TABLE `usuarios_sesion` DISABLE KEYS */;
-/*!40000 ALTER TABLE `usuarios_sesion` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -507,4 +356,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-06-22  8:14:05
+-- Dump completed on 2019-07-27 17:56:53

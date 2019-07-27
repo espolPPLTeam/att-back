@@ -26,16 +26,19 @@ async function obtenerMaterias(limit, offset) {
 };
 
 /**
-  * Creates a register in the table Materias
-  * @param {Object} dataMateria Required fields for the table
-  * @param {String} dataMateria.nombre Name of the subject
-  * @param {String} dataMateria.codigo Subject's code
+  * Crea una nueva materia en la base de datps
+  * @param {Object} dataMateria Datos requeridos de la materia
+  * @param {String} dataMateria.nombre Nombre de la materia
+  * @param {String} dataMateria.codigo Codigo de la materia
+  * @param {Object} datosUsuario Datos del usuario que crea la materia
+  * @param {Number} datosUsuario.id ID del usuario
   */
-async function crearMateria(dataMateria) {
+async function crearMateria(dataMateria, datosUsuario) {
   try {
     const data = await db["Materia"].create({
       nombre: dataMateria.nombre,
-      codigo: dataMateria.codigo
+      codigo: dataMateria.codigo,
+      usuario_registro: datosUsuario.id
     });
     return Promise.resolve(data);
   } catch (error) {

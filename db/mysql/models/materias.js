@@ -18,6 +18,11 @@ module.exports = (sequelize, DataTypes) => {
   );
   Materia.associate = (models) => {
     Materia.hasMany(models.Paralelo);
+    Materia.belongsTo(models.Usuario, {
+      as: "usuarioRegistro",
+      foreignKey: "usuario_registro",
+      constraints: false
+    });
   };
   return Materia;
 };

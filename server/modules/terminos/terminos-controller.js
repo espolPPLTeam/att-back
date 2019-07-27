@@ -8,13 +8,14 @@ const db = Mysql.db;
   * @param {Date} datosTermino.fecha_inicio
   * @param {Date} datosTermino.fecha_fin
   */
-async function crearTermino(datosTermino) {
+async function crearTermino(datosTermino, datosUsuario) {
   try {
     const termino = await db["Termino"].create({
       nombre: datosTermino.nombre,
       fecha_inicio: new Date(datosTermino.fecha_inicio),
       fecha_fin: new Date(datosTermino.fecha_fin),
-      activo: false
+      activo: false,
+      usuario_registro: datosUsuario.id
     });
     return Promise.resolve(termino);
   } catch (error) {

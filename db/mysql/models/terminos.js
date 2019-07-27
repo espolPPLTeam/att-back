@@ -20,6 +20,11 @@ module.exports = (sequelize, DataTypes) => {
   );
   Termino.associate = (models) => {
     Termino.hasMany(models.Paralelo);
+    Termino.belongsTo(models.Usuario, {
+      as: "usuarioRegistro",
+      foreignKey: "usuario_registro",
+      constraints: false
+    });
   };
   return Termino;
 };

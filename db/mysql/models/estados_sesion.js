@@ -18,6 +18,11 @@ module.exports = (sequelize, DataTypes) => {
 
   EstadoSesion.associate = (models) => {
     EstadoSesion.belongsToMany(models.Sesion, { through: models.ActualizacionEstado });
+    EstadoSesion.belongsTo(models.Usuario, {
+      as: "usuarioRegistro",
+      foreignKey: "usuario_registro",
+      constraints: false
+    });
   };
   return EstadoSesion;
 };

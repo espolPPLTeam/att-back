@@ -100,6 +100,44 @@ async function crearProfesor(datosUsuario) {
 };
 
 /**
+  * Metodo para crear un registro de admin en la base de datos
+  *
+  * @param {Object} datosUsuario
+  * @param {String} datosUsuario.nombres Nombres del admin
+  * @param {String} datosUsuario.apellidos Apellidos del admin
+  * @param {String} datosUsuario.email Email con el cual el admin hara login en la app
+  * @param {String} datosUsuario.clave Clave con la cual el admin hara login en la app
+  * @param {String} datosUsuario.matricula Identificacion del admin
+  */
+async function crearAdmin(datosUsuario) {
+  try {
+    // Primero creo registro de usuario
+    const admin = {
+      nombres: datosUsuario.nombres,
+      apellidos: datosUsuario.apellidos,
+      email: datosUsuario.email,
+      matricula: datosUsuario.matricula,
+      estado: "ACTIVO",
+    };
+    const hashedPassword = authenticationService.hashPassword(datosUsuario.clave);
+    admin["clave"] = hashedPassword;
+
+    const usuario = await db["Usuario"].create(admin);
+    // Luego anado su foreign key de rol_id
+    const rolQuery = { nombre: "admin" };
+    const rolAdmin = await db["Rol"].findOne({
+      where: rolQuery
+    });
+    await rolAdmin.addUsuario(usuario);
+    
+    return Promise.resolve(usuario);
+  } catch (error) {
+    console.error(error);
+    return Promise.reject(error);
+  }
+};
+
+/**
   * Busca al usuario por su email y compara las contrasennas
   * Genera el token de autenticacion
   * @param {String} email Email ingresado por el usuario
@@ -175,5 +213,6 @@ async function getDatosUsuario(email) {
 module.exports = {
   crearEstudiante,
   crearProfesor,
+  crearAdmin,
   login
 };
