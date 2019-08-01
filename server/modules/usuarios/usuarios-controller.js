@@ -172,19 +172,24 @@ async function login(email, clave) {
 };
 
 /**
-  * Obtiene los datos del usuario necesarios para la primera carga de la alicacion
+  * Obtiene los datos del usuario necesarios para la primera carga de la aplicacion
   * @param {String} email Email del usuario
   */
 async function getDatosUsuario(email) {
   try {
+    const limit = 10;
     // Buscar usuario
     const usuarioQuery = { email: email };
     /** Campos a mostrar del usuario */
-    const usuarioProjection = ["id", "email", "rolId", "clave"];
+    const usuarioProjection = ["id", "email", "rolId", "clave", "nombres", "apellidos"];
     /** Campos a mostrar del rol del usuario */
     const rolProjection = ["nombre"];
     /** Campos a mostrar del paralelo del usuario */
     const paraleloProjection = ["id", "nombre", "codigo"];
+
+    const materiaProjection = ["id", "nombre", "codigo"];
+
+    const sesionProjection = ["id", "nombre", "fecha_inicio", "fecha_fin"];
     const usuario = await db["Usuario"].findOne({
       where: usuarioQuery,
       attributes: usuarioProjection,
@@ -195,7 +200,25 @@ async function getDatosUsuario(email) {
         },
         {
           model: db["Paralelo"],
-          attributes: paraleloProjection
+          attributes: paraleloProjection,
+          include: [
+            {
+              model: db["Materia"],
+              attributes: materiaProjection
+            },
+            {
+              model: db["Sesion"],
+              attributes: sesionProjection,
+              limit: limit,
+              include: [
+                {
+                  model: db["EstadoSesion"],
+                  as: "sesionActual",
+                  attributes: ["id", "nombre"]
+                }
+              ]
+            }
+          ]
         }
       ]
     });
@@ -210,9 +233,33 @@ async function getDatosUsuario(email) {
   }
 };
 
+/**
+  * Obtiene los datos del usuario necesarios para la primera carga de la aplicacion
+  * @param {Object} datosUsuario
+  * @param {String} datosUsuario.email Email del usuario
+  */
+async function obtenerDatosSesion(datosUsuario) {
+  try {
+    // Buscar usuario
+    const usuario = await getDatosUsuario(datosUsuario.email);
+    if (!usuario) {
+      return Promise.reject("Usuario no encontrado");
+    }
+
+    let datos = Object.assign({}, usuario.dataValues);
+    delete datos["clave"];
+    
+    return Promise.resolve(datos);
+  } catch (error) {
+    console.error(error);
+    return Promie.reject(error);
+  }
+};
+
 module.exports = {
   crearEstudiante,
   crearProfesor,
   crearAdmin,
-  login
+  login,
+  obtenerDatosSesion
 };
