@@ -44,6 +44,28 @@ async function crearPregunta(datosPregunta, datosUsuario) {
   }
 };
 
+async function responderPregunta(datosRespuesta, datosUsuario) {
+  try {
+    const preguntaQuery = { id: datosRespuesta.idPregunta };
+    const pregunta = await db["PreguntaProfesor"].findOne({ where: preguntaQuery });
+    if (!pregunta) {
+      return Promise.reject("Pregunta no existe");
+    }
+    const data = {
+      texto: datosRespuesta.texto,
+      creador_id: datosUsuario.id
+    };
+    const respuesta = await db["Respuesta"].create(data);
+    respuesta.setPregunta(pregunta.id);
+
+    return Promise.resolve(respuesta);
+  } catch (error) {
+    console.error(error);
+    return Promise.reject(error);
+  }
+}
+
 module.exports = {
-  crearPregunta
+  crearPregunta,
+  responderPregunta,
 };
