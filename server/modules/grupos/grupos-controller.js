@@ -20,6 +20,28 @@ async function crearGrupo(datosGrupo, datosUsuario) {
   }
 };
 
+async function anadirProfesorGrupo(idProfesor, idGrupo) {
+  try {
+    const grupoQuery = { id: idGrupo };
+    const grupo = await db["Grupo"].findOne({ where: grupoQuery });
+    if (!grupo) {
+      return Promise.reject("Grupo no existe");
+    }
+    const profesorQuery = { id: idProfesor };
+    const profesor = await db["Usuario"].findOne({ where: profesorQuery });
+    if (!profesor) {
+      return Promise.reject("Usuario no existe");
+    }
+
+    const resultado = await grupo.addProfesor(profesor.id);
+    return Promise.resolve(true);
+  } catch (error) {
+    console.error(error);
+    return Promise.reject(error);
+  }
+}
+
 module.exports = {
   crearGrupo,
+  anadirProfesorGrupo,
 };

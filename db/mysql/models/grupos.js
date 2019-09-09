@@ -18,8 +18,14 @@ module.exports = (sequelize, DataTypes) => {
 
   Grupo.associate = (models) => {
     Grupo.belongsTo(models.Paralelo);
-    Grupo.belongsToMany(models.Usuario, { through: "estudiantes_grupos" });
-    Grupo.belongsToMany(models.Usuario, { through: "profesores_grupos" });
+    Grupo.belongsToMany(models.Usuario, {
+      through: "estudiantes_grupos",
+      as: "Estudiante",
+    });
+    Grupo.belongsToMany(models.Usuario, {
+      through: "profesores_grupos",
+      as: "Profesor",
+    });
     Grupo.belongsTo(models.Usuario, {
       as: "usuarioRegistro",
       foreignKey: "usuario_registro",
