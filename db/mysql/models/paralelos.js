@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     Paralelo.belongsTo(models.Materia);
     Paralelo.belongsTo(models.Termino);
     Paralelo.hasMany(models.Grupo);
-    Paralelo.belongsToMany(models.Usuario, { through: models.ParaleloUsuario });
+    Paralelo.belongsToMany(models.Usuario, { through: "paralelos_usuarios" });
     Paralelo.hasMany(models.Sesion);
     Paralelo.belongsTo(models.Usuario, {
       as: "usuarioRegistro",

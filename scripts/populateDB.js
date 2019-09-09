@@ -8,6 +8,7 @@ const paralelosController = require("../server/modules/paralelos/paralelos-contr
 const rolesController = require("../server/modules/roles/roles-controller");
 const estadosSesionesController = require("../server/modules/estados-sesiones/estadosSesiones-controller");
 const usuariosController = require("../server/modules/usuarios/usuarios-controller");
+const gruposController = require("../server/modules/grupos/grupos-controller");
 
 const databases = require("../db");
 
@@ -40,7 +41,12 @@ async function init() {
       for (let paralelo of paralelosMateria) {
         paralelo["idMateria"] = materiaCreada.id;
         paralelo["idTermino"] = terminoActual;
-        await paralelosController.crearParalelo(paralelo, admin);
+        paraleloCreado = await paralelosController.crearParalelo(paralelo, admin);
+        const gruposParalelo = data.grupos.filter((grupo) => grupo.paralelo == paraleloCreado.codigo && grupo.materia == materia.codigo);
+        for (let grupo of gruposParalelo) {
+          grupo["idParalelo"] = paraleloCreado.id;
+          await gruposController.crearGrupo(grupo, admin);
+        }
       }
     }
     console.log("Creando estados de sesion");

@@ -4,6 +4,7 @@ const paralelos = require("./paralelos");
 const roles = require("./roles");
 const estadosSesion = require("./estadosSesion");
 const usuarios = require("./usuarios");
+const grupos = require("./grupos");
 
 module.exports = {
   materias,
@@ -11,5 +12,6 @@ module.exports = {
   paralelos,
   roles,
   estadosSesion,
-  usuarios
+  usuarios,
+  grupos
 };
