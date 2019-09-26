@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "sesion_id"
     });
     PreguntaProfesor.hasMany(models.Respuesta, {
-      as: "respuesta",
+      as: "respuestas",
       foreignKey: "pregunta_id"
     });
   };
