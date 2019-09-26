@@ -7,10 +7,10 @@ module.exports = (sequelize, DataTypes) => {
       activo: DataTypes.BOOLEAN,
       fecha_fin: DataTypes.DATE,
       fecha_inicio: DataTypes.DATE,
-      estado_actual_id: {
+      /*estado_actual_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-      }
+      }*/
     },
     {
       tableName: "sesiones",

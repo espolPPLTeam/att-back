@@ -206,7 +206,7 @@ async function getDatosUsuario(email) {
               model: db["Materia"],
               attributes: materiaProjection
             },
-            {
+            /*{
               model: db["Sesion"],
               attributes: sesionProjection,
               limit: limit,
@@ -217,7 +217,7 @@ async function getDatosUsuario(email) {
                   attributes: ["id", "nombre"]
                 }
               ]
-            }
+            }*/
           ]
         }
       ]

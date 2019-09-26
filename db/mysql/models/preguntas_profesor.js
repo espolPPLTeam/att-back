@@ -23,11 +23,11 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "creador_id"
     });
     PreguntaProfesor.belongsTo(models.Sesion, {
-      as: "Sesion",
+      as: "sesion",
       foreignKey: "sesion_id"
     });
     PreguntaProfesor.hasMany(models.Respuesta, {
-      as: "Pregunta",
+      as: "respuesta",
       foreignKey: "pregunta_id"
     });
   };
