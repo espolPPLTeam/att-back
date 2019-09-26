@@ -6,7 +6,11 @@ module.exports = (sequelize, DataTypes) => {
       nombre: DataTypes.STRING,
       activo: DataTypes.BOOLEAN,
       fecha_fin: DataTypes.DATE,
-      fecha_inicio: DataTypes.DATE
+      fecha_inicio: DataTypes.DATE,
+      estado_actual_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+      }
     },
     {
       tableName: "sesiones",
@@ -26,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       as: "ActualizacionesEstado"
     });
     Sesion.belongsTo(models.EstadoSesion, {
-      as: "sesionActual",
+      as: "estadoActual",
       foreignKey: "estado_actual_id",
       constraints: false
     });

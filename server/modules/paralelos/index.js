@@ -10,4 +10,14 @@ module.exports = (app) => {
         res.status(500).send({ status: 500, error });
       }
     });
+
+  app.route("/paralelos/agregarUsuario")
+    .put(async (req, res) => {
+      try {
+        const data = await paralelosController.agregarUsuario(req.body.idUsuario, req.body.idParalelo);
+        res.send({ status: 200, data });
+      } catch (error) {
+        res.status(500).send({ status: 500, error });
+      }
+    });
 };

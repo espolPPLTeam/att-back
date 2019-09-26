@@ -28,11 +28,12 @@ async function crearSesion(datosSesion, datosUsuario) {
     let data = {
       nombre: datosSesion.nombre,
       activo: false,
+      estado_actual_id: estado.id,
     };
     const sesion = await db["Sesion"].create(data);
 
     sesion.setParalelo(paralelo.id);
-    sesion.setSesionActual(estado.id);
+    // sesion.setEstadoActual(estado.id);
     sesion.setRegistrador(datosUsuario.id);
 
     return Promise.resolve(sesion);
@@ -42,8 +43,41 @@ async function crearSesion(datosSesion, datosUsuario) {
   }
 };
 
-async function obtenerSesiones() {
+async function obtenerSesiones(queryData) {
+  try {
+    const sesionQuery = {
+      paralelo_id: queryData.paralelo,
+    };
+    let sesiones = await db["Sesion"].findAll({
+      where: sesionQuery,
+      attributes: ["nombre", "activo", "id"],
+      include: [
+        {
+          model: db["Paralelo"],
+          attributes: ["nombre", "codigo", "id"],
+          include: [
+            {
+              model: db["Materia"],
+              attributes: ["nombre", "codigo", "id"],
+            }
+          ]
+        },
+        {
+          model: db["EstadoSesion"],
+          as: "estadoActual",
+          attributes: ["id", "nombre"]
+        }
+      ]
+    });
+    if (!sesiones) {
+      sesiones = [];
+    }
 
+    return Promise.resolve(sesiones);
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
 };
 
 /**
@@ -173,5 +207,6 @@ module.exports = {
   crearSesion,
   iniciarSesion,
   terminarSesion,
-  obtenerDatosSesion
+  obtenerDatosSesion,
+  obtenerSesiones,
 };

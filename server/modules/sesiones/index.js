@@ -50,4 +50,14 @@ module.exports = (app) => {
       }
     });
 
+  app.route("/sesiones")
+    .get(async (req, res) => {
+      try {
+        const sesiones = await sesionesController.obtenerSesiones(req.query);
+        res.send({ status: 200, data: sesiones });
+      } catch (error) {
+        res.status(500).send({ status: 500, error });
+      }
+    });
+
 };

@@ -213,7 +213,7 @@ async function getDatosUsuario(email) {
               include: [
                 {
                   model: db["EstadoSesion"],
-                  as: "sesionActual",
+                  as: "estadoActual",
                   attributes: ["id", "nombre"]
                 }
               ]
@@ -229,7 +229,7 @@ async function getDatosUsuario(email) {
     return Promise.resolve(usuario);
   } catch (error) {
     console.error(error);
-    return Promie.reject(error);
+    return Promise.reject(error);
   }
 };
 
