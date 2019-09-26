@@ -11,6 +11,7 @@ require("./modules/terminos")(app);
 require("./modules/paralelos")(app);
 require("./modules/sesiones")(app);
 require("./modules/preguntas-profesor")(app);
+require("./modules/preguntas-estudiante")(app);
 require("./modules/grupos")(app);
 
 module.exports = app;
