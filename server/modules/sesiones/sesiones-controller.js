@@ -176,15 +176,27 @@ async function obtenerDatosSesion(datosSesion, datosUsuario) {
         attributes: ["id", "texto", "imagen", "createdAt"],
         include: [
           {
+            model: db["Respuesta"],
+            as: "respuestas",
+            attributes: ["id", "texto", "calificacion", "createdAt", "imagen"],
+            include: [
+              {
+                model: db["Usuario"],
+                as: "creador",
+                attributes: ["id", "nombres", "apellidos", "email"],
+              }
+            ]
+          },
+          {
             model: db["Usuario"],
             as: "creador",
             attributes: usuarioProjection
           }
-        ]
+        ],
       },
       {
         model: db["EstadoSesion"],
-        as: "sesionActual",
+        as: "estadoActual",
         attributes: ["id", "nombre"]
       }
     ];
