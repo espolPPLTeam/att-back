@@ -26,13 +26,4 @@ module.exports = (app) => {
       }
     });
 
-  app.route("/obtenerPreguntasProfesor")
-    .get(async (req, res) => {
-      try {
-        const preguntas = await preguntasProfesorController.obtenerPreguntas(req.query);
-        res.send({ status: 200, data: preguntas });
-      } catch (error) {
-        res.status(500).send({ status: 500, error });
-      }
-    });
 };

@@ -20,7 +20,6 @@ const SESION_TERMINADA = 3;
   */
 async function crearPregunta(datosPregunta, datosUsuario) {
   try {
-    console.log(datosPregunta)
     const sesionQuery = { id: datosPregunta.idSesion };
     const sesion = await db["Sesion"].findOne({ where: sesionQuery });
     if (!sesion) {

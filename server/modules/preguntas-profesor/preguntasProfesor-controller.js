@@ -65,40 +65,7 @@ async function responderPregunta(datosRespuesta, datosUsuario) {
   }
 };
 
-async function obtenerPreguntas(queryData) {
-  try {
-    const preguntasQuery = { sesion_id: queryData.idSesion };
-    let preguntas = await db["PreguntaProfesor"].findAll({
-      where: preguntasQuery,
-      attributes: ["id", "texto", "imagen", "createdAt"],
-      include: [
-        {
-          model: db["Respuesta"],
-          as: "respuestas",
-          attributes: ["id", "texto", "calificacion", "createdAt", "imagen"],
-          include: [
-            {
-              model: db["Usuario"],
-              as: "creador",
-              attributes: ["id", "nombres", "apellidos", "email"],
-            }
-          ]
-        }
-      ]
-    });
-    if (!preguntas) {
-      preguntas = [];
-    }
-
-    return Promise.resolve(preguntas);
-  } catch (error) {
-    console.error(error);
-    return Promise.reject(error);
-  }
-};
-
 module.exports = {
   crearPregunta,
   responderPregunta,
-  obtenerPreguntas,
 };

@@ -41,7 +41,9 @@ module.exports = (sequelize, DataTypes) => {
       constraints: false
     });
 
-    Sesion.hasMany(models.PreguntaEstudiante);
+    Sesion.hasMany(models.PreguntaEstudiante, {
+      as: "preguntasEstudiante"
+    });
     Sesion.hasMany(models.PreguntaProfesor, {
       as: "preguntasProfesor"
     });
