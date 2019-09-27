@@ -38,6 +38,8 @@ async function crearPregunta(datosPregunta, datosUsuario) {
     };
     const pregunta = await db["PreguntaProfesor"].create(data);
 
+    process.emit("newProfessorQuestion", pregunta.dataValues);
+
     return Promise.resolve(pregunta);
   } catch (error) {
     console.error(error);

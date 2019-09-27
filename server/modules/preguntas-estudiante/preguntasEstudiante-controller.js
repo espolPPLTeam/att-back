@@ -36,6 +36,8 @@ async function crearPregunta(datosPregunta, datosUsuario) {
       sesion_id: datosPregunta.idSesion
     };
     const pregunta = await db["PreguntaEstudiante"].create(data);
+    
+    process.emit("newStudentQuestion", pregunta.dataValues);
 
     return Promise.resolve(pregunta);
   } catch (error) {

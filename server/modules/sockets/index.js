@@ -1,3 +1,4 @@
+const socketController = require("./socket-controller");
 module.exports = (app) => {
   const io = require('socket.io').listen(app);
   io.origins("*:*");
@@ -9,6 +10,16 @@ module.exports = (app) => {
     } else {
       next();
     }
+  });
+
+  process.on("newStudentQuestion", async (data) => {
+    data["user"] = await socketController.getSocketUserData(data.creador_id);
+    io.emit("newStudentQuestion", data);
+  });
+
+  process.on("newProfessorQuestion", async (data) => {
+    data["user"] = await socketController.getSocketUserData(data.creador_id);
+    io.emit("newProfessorQuestion", data);
   });
 
   io.on("connection", (socket) => {

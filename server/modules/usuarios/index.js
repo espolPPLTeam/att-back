@@ -1,5 +1,6 @@
 const usuariosController = require("./usuarios-controller");
 const authenticationService = require("../authentication/authentication-service");
+const socketController = require("../sockets/socket-controller");
 
 module.exports = (app) => {
   app.route("/estudiantes")
@@ -29,6 +30,16 @@ module.exports = (app) => {
         const datosUsuario = authenticationService.decodeToken(token);
         const datos = await usuariosController.obtenerDatosSesion(datosUsuario);
         res.send({ status: 200, data: datos });
+      } catch (error) {
+        res.status(500).send({ status: 500, error });
+      }
+    });
+
+  app.route("/test'")
+    .post(async (req, res) => {
+      try {
+        const estudiante = await socketController.getSocketUserData(req.body);
+        res.send({ status: 200, data: estudiante });
       } catch (error) {
         res.status(500).send({ status: 500, error });
       }
