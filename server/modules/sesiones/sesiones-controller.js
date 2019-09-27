@@ -173,7 +173,7 @@ async function obtenerDatosSesion(datosSesion, datosUsuario) {
       {
         model: db["PreguntaProfesor"],
         as: "preguntasProfesor",
-        attributes: ["id", "texto", "imagen", "createdAt"],
+        attributes: ["id", "texto", "imagen", "createdAt", "titulo"],
         include: [
           {
             model: db["Respuesta"],

@@ -30,6 +30,7 @@ async function crearPregunta(datosPregunta, datosUsuario) {
     }
 
     const data = {
+      titulo: datosPregunta.titulo,
       texto: datosPregunta.texto,
       imagen: datosPregunta.imagen,
       creador_id: datosUsuario.id,
