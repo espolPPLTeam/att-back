@@ -35,9 +35,11 @@ const initServer = async() => {
     //     return next(err, req, res, next);
     // }, handleErrors);
 
-    app.listen(PORT, function() {
+    const server = app.listen(PORT, function() {
       console.log(`Server listening on port http://localhost:${PORT}`);
     });
+    
+    require("./server/modules/sockets")(server);
   } catch (error) {
     console.error("Unable to start server", error);
   }
