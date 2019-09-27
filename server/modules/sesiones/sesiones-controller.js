@@ -102,7 +102,8 @@ async function iniciarSesion(datosSesion) {
 
     await sesion.update({
       estado_actual_id: estado.id,
-      fecha_inicio: new Date()
+      fecha_inicio: new Date(),
+      activo: true,
     });
 
     await sesion.addActualizacionesEstado(estado.id);
@@ -136,7 +137,8 @@ async function terminarSesion(datosSesion) {
 
     await sesion.update({
       estado_actual_id: estado.id,
-      fecha_fin: new Date()
+      fecha_fin: new Date(),
+      activo: false,
     });
 
     await sesion.addActualizacionesEstado(estado.id);
