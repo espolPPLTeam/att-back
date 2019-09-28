@@ -1,9 +1,9 @@
 module.exports = {
   development: {
-    username: process.env.MYSQL_USER,
-    password: process.env.MYSQL_ROOT_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
-    host: process.env.MYSQL_HOSTNAME,
+    username: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
+    host: process.env.DATABASE_HOST,
     logging: false,
     dialect: "mysql",
   },
@@ -14,11 +14,11 @@ module.exports = {
     operatorsAliases: false,
   },
   production: {
-    username: process.env.MYSQL_USER,
-    password: process.env.MYSQL_ROOT_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
-    host: process.env.MYSQL_HOSTNAME,
+    username: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
+    host: process.env.DATABASE_HOST,
     logging: false,
-    dialect: "mysql",
+    dialect: "mariadb",
   },
 };
