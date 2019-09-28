@@ -1,6 +1,8 @@
 const { Mysql } = require("./../../../db");
 const db = Mysql.db;
 
+const preguntasProfesorConfig = require("./preguntasProfesor-config");
+
 /** ID del estado de una sesion terminada */
 const SESION_TERMINADA = 3;
 
@@ -34,11 +36,10 @@ async function crearPregunta(datosPregunta, datosUsuario) {
       texto: datosPregunta.texto,
       imagen: datosPregunta.imagen,
       creador_id: datosUsuario.id,
-      sesion_id: datosPregunta.idSesion
+      sesion_id: datosPregunta.idSesion,
+      estado: preguntasProfesorConfig.status.PENDING,
     };
     const pregunta = await db["PreguntaProfesor"].create(data);
-
-    process.emit("newProfessorQuestion", pregunta.dataValues);
 
     return Promise.resolve(pregunta);
   } catch (error) {
