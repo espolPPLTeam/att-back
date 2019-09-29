@@ -1,6 +1,8 @@
 const { Mysql } = require("./../../../db");
 const db = Mysql.db;
 
+const usuarioConfig = require("../usuarios/usuarios-config");
+
 /** ID del estado de una sesion terminada */
 const SESION_TERMINADA = 3;
 
@@ -192,12 +194,15 @@ async function terminarSesion(datosSesion) {
 /**
   * Devuelve los datos de preguntas de una sesion
   *
-  * @param {Object} datosSesion
-  * @param {Number} datosSesion.idSesion
+  * @param {object} sessionData
+  * @param {number} sessionData.idSesion
+  * @param {object} userData
+  * @param {number} userData.id ID of the user who made the request
+  * @param {string} userData.rol User's role
   */
-async function obtenerDatosSesion(datosSesion, datosUsuario) {
+async function obtenerDatosSesion(sessionData, userData) {
   try {
-    const sesionQuery = { id: datosSesion.idSesion };
+    const sesionQuery = { id: sessionData.idSesion };
     const sesionProjection = ["nombre", "fecha_inicio", "fecha_fin"];
     const usuarioProjection = ["id", "nombres", "apellidos", "email"];
     const sesionPopulate = [
@@ -211,42 +216,6 @@ async function obtenerDatosSesion(datosSesion, datosUsuario) {
         attributes: usuarioProjection
       },
       {
-        model: db["PreguntaProfesor"],
-        as: "preguntasProfesor",
-        attributes: ["id", "texto", "imagen", "createdAt", "titulo", "estado"],
-        include: [
-          {
-            model: db["Respuesta"],
-            as: "respuestas",
-            attributes: ["id", "texto", "calificacion", "createdAt", "imagen"],
-            include: [
-              {
-                model: db["Usuario"],
-                as: "creador",
-                attributes: ["id", "nombres", "apellidos", "email"],
-              }
-            ]
-          },
-          {
-            model: db["Usuario"],
-            as: "creador",
-            attributes: usuarioProjection
-          }
-        ],
-      },
-      {
-        model: db["PreguntaEstudiante"],
-        as: "preguntasEstudiante",
-        attributes: ["id", "texto", "imagen", "createdAt"],
-        include: [
-          {
-            model: db["Usuario"],
-            as: "creador",
-            attributes: usuarioProjection
-          }
-        ],
-      },
-      {
         model: db["EstadoSesion"],
         as: "estadoActual",
         attributes: ["id", "nombre"]
@@ -255,13 +224,90 @@ async function obtenerDatosSesion(datosSesion, datosUsuario) {
     const sesion = await db["Sesion"].findOne({
       where: sesionQuery,
       attributes: sesionProjection,
-      include: sesionPopulate
+      include: sesionPopulate,
     });
     if (!sesion) {
       return Promise.reject("Sesion no existe");
     }
-    return Promise.resolve(sesion);
+
+    const questions = await getSessionQuestions(sessionData.idSesion, userData);
+
+    const data = Object.assign({}, sesion.dataValues);
+    data["preguntasProfesor"] = questions.preguntasProfesor;
+    data["preguntasEstudiante"] = questions.preguntasEstudiante;
+
+    return Promise.resolve(data);
   } catch (error) {
+    console.error(error);
+    return Promise.reject(error);
+  }
+};
+
+/**
+ * Returns the corresponding questions based on the role of the user making the request
+ *
+ * @description
+ * All professor questions are always returned
+ * If user is a professor, all student questions of the session are returned
+ * If user is a student, only his/her questions are returned
+ *
+ * @param {number} sessionID ID of the session the questions belong to
+ * @param {object} userData
+ * @param {number} userData.id ID of the user who made the request
+ * @param {string} userData.rol User's role
+ */
+async function getSessionQuestions(sessionID, userData) {
+  try {
+    const professorQuestionsQuery = { sesion_id: sessionID };
+    const usuarioProjection = ["id", "nombres", "apellidos", "email"];
+    /** @type {Array} */
+    const professorQuestions = await db["PreguntaProfesor"].findAll({
+      where: professorQuestionsQuery,
+      attributes: ["id", "texto", "imagen", "createdAt", "titulo", "estado"],
+      include: [
+        {
+          model: db["Respuesta"],
+          as: "respuestas",
+          attributes: ["id", "texto", "calificacion", "createdAt", "imagen"],
+          include: [
+            {
+              model: db["Usuario"],
+              as: "creador",
+              attributes: usuarioProjection,
+            }
+          ]
+        },
+        {
+          model: db["Usuario"],
+          as: "creador",
+          attributes: usuarioProjection
+        }
+      ],
+    });
+
+    let studentQuestionsQuery = { sesion_id: sessionID };
+    if (userData.rol === usuarioConfig.role.STUDENT.text) {
+      studentQuestionsQuery["creador_id"] = userData.id;
+    }
+    /** @type {Array} */
+    const studentQuestions = await db["PreguntaEstudiante"].findAll({
+      where: studentQuestionsQuery,
+      attributes: ["id", "texto", "imagen", "createdAt"],
+      include: [
+        {
+          model: db["Usuario"],
+          as: "creador",
+          attributes: usuarioProjection,
+        },
+      ],
+    });
+
+    const data = {
+      preguntasProfesor: professorQuestions.map(question => question.dataValues),
+      preguntasEstudiante: studentQuestions.map(question => question.dataValues),
+    };
+    return Promise.resolve(data);
+  } catch(error) {
     console.error(error);
     return Promise.reject(error);
   }
