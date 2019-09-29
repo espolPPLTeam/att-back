@@ -58,9 +58,17 @@ module.exports = (app) => {
     io.to(room).emit("newStudentQuestion", data);
   });
 
-  process.on("newProfessorQuestion", async (data) => {
-    data["user"] = await socketController.getSocketUserData(data.creador_id);
-    io.emit("newProfessorQuestion", data);
+  /**
+   * When a professor updates the status of a question, all users in the session must be notified
+   * @param {object} data
+   * @param {number} data.questionID ID of the question to update
+   * @param {string} data.status New status to set
+   */
+  process.on("updateProfessorQuestionStatus", async (data) => {
+    const roomS = `SESSION-${data.sesionId}-STUDENT`;
+    io.to(roomS).emit("updateProfessorQuestionStatus", data);
+    const roomP = `SESSION-${data.sesionId}-PROFESSOR`;
+    io.to(roomP).emit("updateProfessorQuestionStatus", data);
   });
 
   io.on("connection", (socket) => {

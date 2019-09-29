@@ -88,6 +88,13 @@ async function updateQuestionStatus(questionData) {
       estado: questionData.status,
     });
 
+    //=====================//
+    //     SEND SOCKET     //
+    //=====================//
+    const socketData = Object.assign({},   questionData);
+    socketData["sesionId"] = question.dataValues.sesionId;
+    process.emit("updateProfessorQuestionStatus", socketData);
+
     return Promise.resolve(question);
   } catch (error) {
     console.error(error);
