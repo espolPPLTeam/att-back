@@ -18,9 +18,9 @@ module.exports = (app) => {
     .post(async (req, res) => {
       try {
         const token = req.headers["x-access-token"];
-        const datosUsuario = authenticationService.decodeToken(token);
-        const respuesta = await preguntasProfesorController.responderPregunta(req.body, datosUsuario);
-        res.send({ status: 200, data: respuesta });
+        const userData = authenticationService.decodeToken(token);
+        const answer = await preguntasProfesorController.answerQuestion(req.body, userData);
+        res.send({ status: 200, data: answer });
       } catch (error) {
         res.status(500).send({ status: 500, error });
       }

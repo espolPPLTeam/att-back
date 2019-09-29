@@ -48,21 +48,30 @@ async function crearPregunta(datosPregunta, datosUsuario) {
   }
 };
 
-async function responderPregunta(datosRespuesta, datosUsuario) {
+async function answerQuestion(answerData, userData) {
   try {
-    const preguntaQuery = { id: datosRespuesta.idPregunta };
-    const pregunta = await db["PreguntaProfesor"].findOne({ where: preguntaQuery });
-    if (!pregunta) {
+    const questionQuery = { id: answerData.idPregunta };
+    const question = await db["PreguntaProfesor"].findOne({ where: questionQuery });
+    if (!question) {
       return Promise.reject("Pregunta no existe");
     }
     const data = {
-      texto: datosRespuesta.texto,
-      creador_id: datosUsuario.id
+      texto: answerData.texto,
+      creador_id: userData.id
     };
-    const respuesta = await db["Respuesta"].create(data);
-    respuesta.setPregunta(pregunta.id);
+    const answer = await db["Respuesta"].create(data);
+    answer.setPregunta(question.id);
 
-    return Promise.resolve(respuesta);
+    //=====================//
+    //     SEND SOCKET     //
+    //=====================//
+    const socketData = Object.assign({}, answer.dataValues);
+    socketData["sesionId"] = question.dataValues.sesionId;
+    socketData["creador_id"] = userData.id;
+    socketData["question"] = answerData.idPregunta;
+    process.emit("answerQuestion", socketData);
+
+    return Promise.resolve(answer);
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
@@ -104,6 +113,6 @@ async function updateQuestionStatus(questionData) {
 
 module.exports = {
   crearPregunta,
-  responderPregunta,
+  answerQuestion,
   updateQuestionStatus,
 };
