@@ -59,7 +59,12 @@ module.exports = (app) => {
     counter++;
 
     socket.on('joinChatRoom', (data, callback) => {
-      let roomID = `COURSE-${data}`;
+      let roomID = "";
+      if (data.type === "COURSE") {
+        roomID = `COURSE-${data.id}`;
+      } else if (data.type === "SESSION") {
+        roomID = `SESSION-${data.id}`;
+      }
       console.log("joinning room: ", roomID);
       socket.join(roomID);
       if (callback) {
@@ -68,13 +73,19 @@ module.exports = (app) => {
     });
 
     socket.on('leaveChatRoom', (data, callback) => {
-      let roomID = `COURSE-${data}`;
+      let roomID = "";
+      if (data.type === "COURSE") {
+        roomID = `COURSE-${data.id}`;
+      } else if (data.type === "SESSION") {
+        roomID = `SESSION-${data.id}`;
+      }
       console.log("leaving room: ", roomID);
       socket.leave(roomID);
       if (callback) {
         callback(200);
       }
     });
+
   });
 
 };
