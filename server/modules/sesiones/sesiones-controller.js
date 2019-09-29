@@ -17,7 +17,16 @@ const SESION_TERMINADA = 3;
 async function crearSesion(datosSesion, datosUsuario) {
   try {
     const paraleloQuery = { id: datosSesion.idParalelo };
-    const paralelo = await db["Paralelo"].findOne({ where: paraleloQuery });
+    const paralelo = await db["Paralelo"].findOne({
+      where: paraleloQuery,
+      attributes: ["id", "nombre"],
+      include: [
+        {
+          model: db["Materia"],
+          attributes: ["id", "nombre"],
+        }
+      ]
+    });
     if (!paralelo) {
       return Promise.reject("Paralelo not found.");
     }
@@ -33,8 +42,17 @@ async function crearSesion(datosSesion, datosUsuario) {
     const sesion = await db["Sesion"].create(data);
 
     sesion.setParalelo(paralelo.id);
-    // sesion.setEstadoActual(estado.id);
     sesion.setRegistrador(datosUsuario.id);
+
+    //=====================//
+    //     SEND SOCKET     //
+    //=====================//
+    const socketData = Object.assign({}, sesion.dataValues);
+    socketData["course"] = paralelo.dataValues.id;
+    socketData["courseName"] = paralelo.dataValues.nombre;
+    socketData["subject"] = paralelo.dataValues.materia.dataValues.id;
+    socketData["subjectName"] = paralelo.dataValues.materia.dataValues.nombre;
+    process.emit("sessionCreated", socketData);
 
     return Promise.resolve(sesion);
   } catch (error) {

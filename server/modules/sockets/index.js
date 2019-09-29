@@ -1,4 +1,13 @@
 const socketController = require("./socket-controller");
+
+/**
+ * ROOMS
+ *
+ * COURSE  -> COURSE-{{ courseID }}
+ * SESSION -> SESSION-{{ sessionID }} 
+ * GROUP   -> GROUP-{{ groupID }}
+ */
+
 module.exports = (app) => {
   const io = require('socket.io').listen(app);
   io.origins("*:*");
@@ -10,6 +19,15 @@ module.exports = (app) => {
     } else {
       next();
     }
+  });
+
+  /**
+   * When a new session is created, all the users in the COURSE ROOM must be notified
+   * The data sent is the created session data
+   */
+  process.on("sessionCreated", async data => {
+    const room = `COURSE-${data.paraleloId}`;
+    io.to(room).emit("sessionCreated", data);
   });
 
   process.on("newStudentQuestion", async (data) => {
@@ -28,7 +46,7 @@ module.exports = (app) => {
     counter++;
 
     socket.on('joinChatRoom', (data, callback) => {
-      let roomID = `courseID-${data}`;
+      let roomID = `COURSE-${data}`;
       console.log("joinning room: ", roomID);
       socket.join(roomID);
       if (callback) {
@@ -37,7 +55,7 @@ module.exports = (app) => {
     });
 
     socket.on('leaveChatRoom', (data, callback) => {
-      let roomID = `courseID-${data}`;
+      let roomID = `COURSE-${data}`;
       console.log("leaving room: ", roomID);
       socket.leave(roomID);
       if (callback) {
