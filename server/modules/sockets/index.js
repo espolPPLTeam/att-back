@@ -43,9 +43,19 @@ module.exports = (app) => {
     io.to(room).emit("updateSessionStatus", data);
   });
 
+  /**
+   * When a student asks a question, the question must be sent to the professor of the session
+   * The socket is sent to all the users in the session, the logic to only show it to the professor is handled in the front end
+   *
+   * @params {object} data
+   * @params {number} data.status ID of the new status
+   * @params {number} data.id Session ID
+   * @params {number} data.paraleloId
+   */
   process.on("newStudentQuestion", async (data) => {
+    const room = `SESSION-${data.sesionId}-PROFESSOR`;
     data["user"] = await socketController.getSocketUserData(data.creador_id);
-    io.emit("newStudentQuestion", data);
+    io.to(room).emit("newStudentQuestion", data);
   });
 
   process.on("newProfessorQuestion", async (data) => {
@@ -54,33 +64,20 @@ module.exports = (app) => {
   });
 
   io.on("connection", (socket) => {
-    let counter = 1;
-    console.log(`Connected users: ${counter}`);
-    counter++;
 
     socket.on('joinChatRoom', (data, callback) => {
-      let roomID = "";
-      if (data.type === "COURSE") {
-        roomID = `COURSE-${data.id}`;
-      } else if (data.type === "SESSION") {
-        roomID = `SESSION-${data.id}`;
-      }
-      console.log("joinning room: ", roomID);
-      socket.join(roomID);
+      const room = socketController.getRoom(data);
+      console.log("joinning room: ", room);
+      socket.join(room);
       if (callback) {
         callback(200);
       }
     });
 
     socket.on('leaveChatRoom', (data, callback) => {
-      let roomID = "";
-      if (data.type === "COURSE") {
-        roomID = `COURSE-${data.id}`;
-      } else if (data.type === "SESSION") {
-        roomID = `SESSION-${data.id}`;
-      }
-      console.log("leaving room: ", roomID);
-      socket.leave(roomID);
+      const room = socketController.getRoom(data);
+      console.log("leaving room: ", room);
+      socket.leave(room);
       if (callback) {
         callback(200);
       }
