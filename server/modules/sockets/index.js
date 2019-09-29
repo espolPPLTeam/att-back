@@ -25,9 +25,22 @@ module.exports = (app) => {
    * When a new session is created, all the users in the COURSE ROOM must be notified
    * The data sent is the created session data
    */
-  process.on("sessionCreated", async data => {
+  process.on("sessionCreated", data => {
     const room = `COURSE-${data.paraleloId}`;
     io.to(room).emit("sessionCreated", data);
+  });
+
+  /**
+   * When a professor updates the status of a session, either by starting or ending it, 
+   * all the users in the COURSE ROOM must be notified
+   * @params {object} data
+   * @params {number} data.status ID of the new status
+   * @params {number} data.id Session ID
+   * @params {number} data.paraleloId
+   */
+  process.on("updateSessionStatus", data => {
+    const room = `COURSE-${data.paraleloId}`;
+    io.to(room).emit("updateSessionStatus", data);
   });
 
   process.on("newStudentQuestion", async (data) => {

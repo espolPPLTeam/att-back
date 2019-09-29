@@ -126,6 +126,16 @@ async function iniciarSesion(datosSesion) {
 
     await sesion.addActualizacionesEstado(estado.id);
 
+    //=====================//
+    //     SEND SOCKET     //
+    //=====================//
+    const socketData = {
+      id: sesion.id,
+      status: estado.id,
+      paraleloId: sesion.dataValues.paraleloId,
+    };
+    process.emit("updateSessionStatus", socketData);
+
     return Promise.resolve(sesion);
   } catch (error) {
     console.error(error);
@@ -160,6 +170,16 @@ async function terminarSesion(datosSesion) {
     });
 
     await sesion.addActualizacionesEstado(estado.id);
+
+    //=====================//
+    //     SEND SOCKET     //
+    //=====================//
+    const socketData = {
+      id: sesion.id,
+      status: estado.id,
+      paraleloId: sesion.dataValues.paraleloId,
+    };
+    process.emit("updateSessionStatus", socketData);
 
     return Promise.resolve(sesion);
   } catch (error) {
