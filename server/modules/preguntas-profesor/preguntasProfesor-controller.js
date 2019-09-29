@@ -69,7 +69,34 @@ async function responderPregunta(datosRespuesta, datosUsuario) {
   }
 };
 
+/**
+ * Updates the status of an existing question
+ *
+ * @param {object} questionData
+ * @param {number} questionData.questionID ID of the question to update
+ * @param {string} questionData.status New status to set
+ */
+async function updateQuestionStatus(questionData) {
+  try {
+    const questionQuery = { id: questionData.questionID };
+    const question = await db["PreguntaProfesor"].findOne({ where: questionQuery });
+    if (!question) {
+      return Promise.reject("Pregunta no existe");
+    }
+
+    await question.update({
+      estado: questionData.status,
+    });
+
+    return Promise.resolve(question);
+  } catch (error) {
+    console.error(error);
+    return Promise.reject(error);
+  }
+};
+
 module.exports = {
   crearPregunta,
   responderPregunta,
+  updateQuestionStatus,
 };

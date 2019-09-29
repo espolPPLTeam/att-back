@@ -26,4 +26,14 @@ module.exports = (app) => {
       }
     });
 
+  app.route("/professorQuestion/updateStatus")
+    .put(async (req, res) => {
+      try {
+        const data = await preguntasProfesorController.updateQuestionStatus(req.body);
+        res.send({ status: 200, data });
+      } catch (error) {
+        res.status(500).send({ status: 500, error });
+      }
+    });
+
 };
