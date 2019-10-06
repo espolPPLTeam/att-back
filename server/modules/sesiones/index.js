@@ -1,60 +1,60 @@
-const sesionesController = require("./sesiones-controller");
+const sessionsController = require("./sesiones-controller");
 const authenticationService = require("../authentication/authentication-service");
 
 module.exports = (app) => {
-  app.route("/crearSesion")
+  app.route("/sessions/createSession")
     .post(async (req, res) => {
       try {
       	const token = req.headers["x-access-token"];
-      	const datosUsuario = authenticationService.decodeToken(token);
-        const sesion = await sesionesController.crearSesion(req.body, datosUsuario);
-        res.send({ status: 200, data: sesion });
+      	const userData = authenticationService.decodeToken(token);
+        const session = await sessionsController.createSession(req.body, userData);
+        res.send({ status: 200, data: session });
       } catch (error) {
         res.status(500).send({ status: 500, error });
       }
     });
 
-  app.route("/iniciarSesion")
+  app.route("/sessions/start")
     .put(async (req, res) => {
       try {
         const token = req.headers["x-access-token"];
-        const datosUsuario = authenticationService.decodeToken(token);
-        const sesion = await sesionesController.iniciarSesion(req.body, datosUsuario);
-        res.send({ status: 200, data: sesion });
+        const userData = authenticationService.decodeToken(token);
+        const session = await sessionsController.start(req.body, userData);
+        res.send({ status: 200, data: session });
       } catch (error) {
         res.status(500).send({ status: 500, error });
       }
     });
 
-  app.route("/terminarSesion")
+  app.route("/sessions/end")
     .put(async (req, res) => {
       try {
         const token = req.headers["x-access-token"];
-        const datosUsuario = authenticationService.decodeToken(token);
-        const sesion = await sesionesController.terminarSesion(req.body, datosUsuario);
-        res.send({ status: 200, data: sesion });
+        const userData = authenticationService.decodeToken(token);
+        const session = await sessionsController.end(req.body, userData);
+        res.send({ status: 200, data: session });
       } catch (error) {
         res.status(500).send({ status: 500, error });
       }
     });
 
-  app.route("/datosSesion")
+  app.route("/sessions/getSessionData")
     .get(async (req, res) => {
       try {
         const token = req.headers["x-access-token"];
-        const datosUsuario = authenticationService.decodeToken(token);
-        const sesion = await sesionesController.obtenerDatosSesion(req.query, datosUsuario);
-        res.send({ status: 200, data: sesion });
+        const userData = authenticationService.decodeToken(token);
+        const session = await sessionsController.getSessionData(req.query, userData);
+        res.send({ status: 200, data: session });
       } catch (error) {
         res.status(500).send({ status: 500, error });
       }
     });
 
-  app.route("/sesiones")
+  app.route("/sessions")
     .get(async (req, res) => {
       try {
-        const sesiones = await sesionesController.obtenerSesiones(req.query);
-        res.send({ status: 200, data: sesiones });
+        const sessions = await sessionsController.getSessions(req.query);
+        res.send({ status: 200, data: sessions });
       } catch (error) {
         res.status(500).send({ status: 500, error });
       }

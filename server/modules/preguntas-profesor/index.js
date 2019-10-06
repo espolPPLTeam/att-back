@@ -1,35 +1,35 @@
-const preguntasProfesorController = require("./preguntasProfesor-controller");
+const professorQuestionController = require("./preguntasProfesor-controller");
 const authenticationService = require("../authentication/authentication-service");
 
 module.exports = (app) => {
-  app.route("/crearPreguntaProfesor")
+  app.route("/questions/createProfessorQuestion")
     .post(async (req, res) => {
       try {
       	const token = req.headers["x-access-token"];
-      	const datosUsuario = authenticationService.decodeToken(token);
-        const pregunta = await preguntasProfesorController.crearPregunta(req.body, datosUsuario);
-        res.send({ status: 200, data: pregunta });
+      	const userData = authenticationService.decodeToken(token);
+        const question = await professorQuestionController.createQuestion(req.body, userData);
+        res.send({ status: 200, data: question });
       } catch (error) {
         res.status(500).send({ status: 500, error });
       }
     });
 
-  app.route("/responderPregunta")
+  app.route("/questions/answer")
     .post(async (req, res) => {
       try {
         const token = req.headers["x-access-token"];
         const userData = authenticationService.decodeToken(token);
-        const answer = await preguntasProfesorController.answerQuestion(req.body, userData);
+        const answer = await professorQuestionController.answerQuestion(req.body, userData);
         res.send({ status: 200, data: answer });
       } catch (error) {
         res.status(500).send({ status: 500, error });
       }
     });
 
-  app.route("/professorQuestion/updateStatus")
+  app.route("/questions/updateStatus")
     .put(async (req, res) => {
       try {
-        const data = await preguntasProfesorController.updateQuestionStatus(req.body);
+        const data = await professorQuestionController.updateQuestionStatus(req.body);
         res.send({ status: 200, data });
       } catch (error) {
         res.status(500).send({ status: 500, error });

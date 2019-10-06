@@ -7,20 +7,19 @@ const usuarioConfig = require("../usuarios/usuarios-config");
 const SESION_TERMINADA = 3;
 
 /**
-  * Crea un registro de una sesion en esato PENDIENTE
-  * Una sesion pertenece a un paralelo
-  *
-  * @param {Object} datosSesion
-  * @param {Number} datosSesion.idParalelo ID del paralelo al que pertenece la sesion
-  * @param {String} datosSesion.nombre Nombre de la sesion a crear
-  * @param {Object} datosUsuario
-  * @param {Number} datosUsuario.id Id del usuario que crea la sesion
-  */
-async function crearSesion(datosSesion, datosUsuario) {
+ * Creates the register of a new session in a course
+ *
+ * @param {Object} sessionData
+ * @param {Number} sessionData.idParalelo ID of the course the session belongs to
+ * @param {String} sessionData.nombre Name of the session
+ * @param {Object} userData
+ * @param {Number} userData.id ID of the user who creates the session
+ */
+async function createSession(sessionData, userData) {
   try {
-    const paraleloQuery = { id: datosSesion.idParalelo };
-    const paralelo = await db["Paralelo"].findOne({
-      where: paraleloQuery,
+    const courseQuery = { id: sessionData.idParalelo };
+    const course = await db["Paralelo"].findOne({
+      where: courseQuery,
       attributes: ["id", "nombre"],
       include: [
         {
@@ -29,47 +28,53 @@ async function crearSesion(datosSesion, datosUsuario) {
         }
       ]
     });
-    if (!paralelo) {
+    if (!course) {
       return Promise.reject("Paralelo not found.");
     }
 
-    const estadoQuery = { nombre: "PENDIENTE" };
-    const estado = await db["EstadoSesion"].findOne({ where: estadoQuery });
+    const statusQuery = { nombre: "PENDIENTE" };
+    const status = await db["EstadoSesion"].findOne({ where: statusQuery });
 
     let data = {
-      nombre: datosSesion.nombre,
+      nombre: sessionData.nombre,
       activo: false,
-      estado_actual_id: estado.id,
+      estado_actual_id: status.id,
     };
-    const sesion = await db["Sesion"].create(data);
+    const session = await db["Sesion"].create(data);
 
-    sesion.setParalelo(paralelo.id);
-    sesion.setRegistrador(datosUsuario.id);
+    session.setParalelo(course.id);
+    session.setRegistrador(userData.id);
 
     //=====================//
     //     SEND SOCKET     //
     //=====================//
-    const socketData = Object.assign({}, sesion.dataValues);
-    socketData["course"] = paralelo.dataValues.id;
-    socketData["courseName"] = paralelo.dataValues.nombre;
-    socketData["subject"] = paralelo.dataValues.materia.dataValues.id;
-    socketData["subjectName"] = paralelo.dataValues.materia.dataValues.nombre;
+    const socketData = Object.assign({}, session.dataValues);
+    socketData["course"] = course.dataValues.id;
+    socketData["courseName"] = course.dataValues.nombre;
+    socketData["subject"] = course.dataValues.materia.dataValues.id;
+    socketData["subjectName"] = course.dataValues.materia.dataValues.nombre;
     process.emit("sessionCreated", socketData);
 
-    return Promise.resolve(sesion);
+    return Promise.resolve(session);
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
   }
 };
 
-async function obtenerSesiones(queryData) {
+/**
+ * Queries all the registers in the Sesion table. Filters by the fields in queryData
+ * @param {object} queryData
+ * @param {number} queryData.paralelo ID of the course to filter the sessions
+ * @return {Array}
+ */
+async function getSessions(queryData) {
   try {
-    const sesionQuery = {
+    const sessionQuery = {
       paralelo_id: queryData.paralelo,
     };
-    let sesiones = await db["Sesion"].findAll({
-      where: sesionQuery,
+    let sessions = await db["Sesion"].findAll({
+      where: sessionQuery,
       attributes: ["nombre", "activo", "id"],
       include: [
         {
@@ -89,11 +94,11 @@ async function obtenerSesiones(queryData) {
         }
       ]
     });
-    if (!sesiones) {
-      sesiones = [];
+    if (!sessions) {
+      sessions = [];
     }
 
-    return Promise.resolve(sesiones);
+    return Promise.resolve(sessions);
   } catch (error) {
     console.error(error);
     return error;
@@ -101,44 +106,44 @@ async function obtenerSesiones(queryData) {
 };
 
 /**
-  * Da por iniciada una sesion previamente creada
-  *
-  * @param {Object} datosSesion
-  * @param {Number} datosSesion.idSesion ID de la sesion a iniciar
-  */
-async function iniciarSesion(datosSesion) {
+ * Starts a session and sends the socket to all users in the course room
+ *
+ * @param {Object} sessionData
+ * @param {Number} sessionData.idSesion ID de la sesion a iniciar
+ */
+async function start(sessionData) {
   try {
-    const sesionQuery = { id: datosSesion.idSesion };
-    const sesion = await db["Sesion"].findOne({ where: sesionQuery });
-    if (!sesion) {
+    const sessionQuery = { id: sessionData.idSesion };
+    const session = await db["Sesion"].findOne({ where: sessionQuery });
+    if (!session) {
       return Promise.reject("Sesion no existe");
     }
-    if (sesion.get("estado_actual_id") == SESION_TERMINADA) {
+    if (session.get("estado_actual_id") == SESION_TERMINADA) {
       return Promise.reject("Sesion finalizada. No se puede actualizar");
     }
 
-    const estadoQuery = { nombre: "ACTIVA" };
-    const estado = await db["EstadoSesion"].findOne({ where: estadoQuery });
+    const statusQuery = { nombre: "ACTIVA" };
+    const status = await db["EstadoSesion"].findOne({ where: statusQuery });
 
-    await sesion.update({
-      estado_actual_id: estado.id,
+    await session.update({
+      estado_actual_id: status.id,
       fecha_inicio: new Date(),
       activo: true,
     });
 
-    await sesion.addActualizacionesEstado(estado.id);
+    await session.addActualizacionesEstado(status.id);
 
     //=====================//
     //     SEND SOCKET     //
     //=====================//
     const socketData = {
-      id: sesion.id,
-      status: estado.id,
-      paraleloId: sesion.dataValues.paraleloId,
+      id: session.id,
+      status: status.id,
+      paraleloId: session.dataValues.paraleloId,
     };
     process.emit("updateSessionStatus", socketData);
 
-    return Promise.resolve(sesion);
+    return Promise.resolve(session);
   } catch (error) {
     console.error(error);
     return error;
@@ -146,44 +151,44 @@ async function iniciarSesion(datosSesion) {
 };
 
 /**
-  * Da por finalizada una sesion previamente creada
+  * Terminates an ACTIVE session and sends the socket to all users in the course room
   *
-  * @param {Object} datosSesion
-  * @param {Number} datosSesion.idSesion ID de la sesion a iniciar
+  * @param {Object} sessionData
+  * @param {Number} sessionData.idSesion ID de la sesion a iniciar
   */
-async function terminarSesion(datosSesion) {
+async function end(sessionData) {
   try {
-    const sesionQuery = { id: datosSesion.idSesion };
-    const sesion = await db["Sesion"].findOne({ where: sesionQuery });
-    if (!sesion) {
+    const sessionQuery = { id: sessionData.idSesion };
+    const session = await db["Sesion"].findOne({ where: sessionQuery });
+    if (!session) {
       return Promise.reject("Sesion no existe");
     }
-    if (sesion.get("estado_actual_id") == SESION_TERMINADA) {
+    if (session.get("estado_actual_id") == SESION_TERMINADA) {
       return Promise.reject("Sesion finalizada. No se puede actualizar");
     }
 
-    const estadoQuery = { nombre: "TERMINADA" };
-    const estado = await db["EstadoSesion"].findOne({ where: estadoQuery });
+    const statusQuery = { nombre: "TERMINADA" };
+    const status = await db["EstadoSesion"].findOne({ where: statusQuery });
 
-    await sesion.update({
-      estado_actual_id: estado.id,
+    await session.update({
+      estado_actual_id: status.id,
       fecha_fin: new Date(),
       activo: false,
     });
 
-    await sesion.addActualizacionesEstado(estado.id);
+    await session.addActualizacionesEstado(status.id);
 
     //=====================//
     //     SEND SOCKET     //
     //=====================//
     const socketData = {
-      id: sesion.id,
-      status: estado.id,
-      paraleloId: sesion.dataValues.paraleloId,
+      id: session.id,
+      status: status.id,
+      paraleloId: session.dataValues.paraleloId,
     };
     process.emit("updateSessionStatus", socketData);
 
-    return Promise.resolve(sesion);
+    return Promise.resolve(session);
   } catch (error) {
     console.error(error);
     return error;
@@ -192,20 +197,20 @@ async function terminarSesion(datosSesion) {
 
 
 /**
-  * Devuelve los datos de preguntas de una sesion
-  *
-  * @param {object} sessionData
-  * @param {number} sessionData.idSesion
-  * @param {object} userData
-  * @param {number} userData.id ID of the user who made the request
-  * @param {string} userData.rol User's role
-  */
-async function obtenerDatosSesion(sessionData, userData) {
+ * Returns all the questions from one particular session
+ *
+ * @param {object} sessionData
+ * @param {number} sessionData.idSesion
+ * @param {object} userData
+ * @param {number} userData.id ID of the user who made the request
+ * @param {string} userData.rol User's role
+ */
+async function getSessionData(sessionData, userData) {
   try {
-    const sesionQuery = { id: sessionData.idSesion };
-    const sesionProjection = ["nombre", "fecha_inicio", "fecha_fin"];
-    const usuarioProjection = ["id", "nombres", "apellidos", "email"];
-    const sesionPopulate = [
+    const sessionQuery = { id: sessionData.idSesion };
+    const sessionProjection = ["nombre", "fecha_inicio", "fecha_fin"];
+    const userProjection = ["id", "nombres", "apellidos", "email"];
+    const sessionPopulate = [
       {
         model: db["Paralelo"],
         attributes: ["nombre", "codigo", "id"]
@@ -213,7 +218,7 @@ async function obtenerDatosSesion(sessionData, userData) {
       {
         model: db["Usuario"],
         as: "registrador",
-        attributes: usuarioProjection
+        attributes: userProjection
       },
       {
         model: db["EstadoSesion"],
@@ -221,18 +226,18 @@ async function obtenerDatosSesion(sessionData, userData) {
         attributes: ["id", "nombre"]
       }
     ];
-    const sesion = await db["Sesion"].findOne({
-      where: sesionQuery,
-      attributes: sesionProjection,
-      include: sesionPopulate,
+    const session = await db["Sesion"].findOne({
+      where: sessionQuery,
+      attributes: sessionProjection,
+      include: sessionPopulate,
     });
-    if (!sesion) {
+    if (!session) {
       return Promise.reject("Sesion no existe");
     }
 
     const questions = await getSessionQuestions(sessionData.idSesion, userData);
 
-    const data = Object.assign({}, sesion.dataValues);
+    const data = Object.assign({}, session.dataValues);
     data["preguntasProfesor"] = questions.preguntasProfesor;
     data["preguntasEstudiante"] = questions.preguntasEstudiante;
 
@@ -314,9 +319,9 @@ async function getSessionQuestions(sessionID, userData) {
 }
 
 module.exports = {
-  crearSesion,
-  iniciarSesion,
-  terminarSesion,
-  obtenerDatosSesion,
-  obtenerSesiones,
+  createSession,
+  start,
+  end,
+  getSessionData,
+  getSessions,
 };

@@ -12,7 +12,10 @@ const config = {
       id: 3,
       text: "admin",
     },
-  }
+  },
+  status: {
+    ACTIVE: "ACTIVO",
+  },
 };
 
 module.exports = config;

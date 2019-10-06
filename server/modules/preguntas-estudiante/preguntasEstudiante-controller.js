@@ -11,35 +11,35 @@ const SESION_TERMINADA = 3;
   * Una pregunta tiene que pertenecer a una sesion
   * Una pregunta tiene que tener un registrador
   *
-  * @param {Object} datosPregunta
-  * @param {String} datosPregunta.texto Descripcion de la pregunta
-  * @param {String} datosPregunta.imagen URL de la imagen vinculada a esta pregunta
-  * @param {Number} datosPregunta.idSesion ID de la sesion a la que pertenece esta pregunta
-  * @param {Object} datosUsuario
-  * @param {Number} datosUsuario.id ID del usuario que crea la pregunta
+  * @param {Object} questionData
+  * @param {String} questionData.texto Descripcion de la pregunta
+  * @param {String} questionData.imagen URL de la imagen vinculada a esta pregunta
+  * @param {Number} questionData.idSesion ID de la sesion a la que pertenece esta pregunta
+  * @param {Object} userData
+  * @param {Number} userData.id ID del usuario que crea la pregunta
   */
-async function crearPregunta(datosPregunta, datosUsuario) {
+async function createQuestion(questionData, userData) {
   try {
-    const sesionQuery = { id: datosPregunta.idSesion };
-    const sesion = await db["Sesion"].findOne({ where: sesionQuery });
-    if (!sesion) {
+    const sessionQuery = { id: questionData.idSesion };
+    const session = await db["Sesion"].findOne({ where: sessionQuery });
+    if (!session) {
       return Promise.reject("Sesion no existe");
     }
-    if (sesion.get("estado_actual_id") == SESION_TERMINADA) {
+    if (session.get("estado_actual_id") == SESION_TERMINADA) {
       return Promise.reject("Sesion terminada. No se puede anadir pregunta");
     }
 
     const data = {
-      texto: datosPregunta.texto,
-      imagen: datosPregunta.imagen,
-      creador_id: datosUsuario.id,
-      sesion_id: datosPregunta.idSesion
+      texto: questionData.texto,
+      imagen: questionData.imagen,
+      creador_id: userData.id,
+      sesion_id: questionData.idSesion
     };
-    const pregunta = await db["PreguntaEstudiante"].create(data);
+    const question = await db["PreguntaEstudiante"].create(data);
     
-    process.emit("newStudentQuestion", pregunta.dataValues);
+    process.emit("newStudentQuestion", question.dataValues);
 
-    return Promise.resolve(pregunta);
+    return Promise.resolve(question);
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
@@ -48,5 +48,5 @@ async function crearPregunta(datosPregunta, datosUsuario) {
 
 
 module.exports = {
-  crearPregunta,
+  createQuestion,
 };
