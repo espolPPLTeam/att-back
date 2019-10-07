@@ -356,6 +356,43 @@ async function joinSession(sessionData, userData) {
   }
 }
 
+/**
+ * If the session is PENDING or ACTIVE, sets the user as not in the session
+ * @param {object} sessionData
+ * @param {number} sessionData.sessionID
+ * @param {object} userData
+ * @param {number} userData.userID
+ */
+async function leaveSession(sessionData, userData) {
+  try {
+    const sessionQuery = { id: sessionData.sessionID };
+    const session = await db["Sesion"].findOne({ where: sessionQuery });
+    if (!session) {
+      console.error("Session doesn't exists");
+      return false;
+    }
+    if (session.estado_actual_id === sessionsConfig.status.TERMINATED.id) {
+      console.error("Session is terminated");
+      return false;
+    }
+
+    const userSession = await db["UsuarioSesion"].findOne({
+      where: {
+        sesion_id: sessionData.sessionID,
+        usuario_id: userData.userID,
+      }
+    });
+    if (userSession) {
+      await userSession.update({
+        activo: false,
+      });
+    }
+    
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 module.exports = {
   createSession,
   start,
@@ -363,4 +400,5 @@ module.exports = {
   getSessionData,
   getSessions,
   joinSession,
+  leaveSession,
 };

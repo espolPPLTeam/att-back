@@ -78,8 +78,27 @@ async function joinRoomHandler(data) {
   }
 }
 
+/**
+ * @param {object} data
+ * @param {string} data.type Type of socket room to join
+ * @param {number} data.id ID of the room to join. If type is SESSION, this is the session ID
+ * @param {number} data.userID ID of the user
+ */
+async function leaveRoomHandler(data) {
+  if (data.type === socketConfig.type.SESSION) {
+    const sessionData = {
+      sessionID: data.id,
+    };
+    const userData = {
+      userID: data.userID,
+    };
+    await sessionsController.leaveSession(sessionData, userData);
+  }
+}
+
 module.exports = {
   getSocketUserData,
   getRoom,
   joinRoomHandler,
+  leaveRoomHandler,
 };

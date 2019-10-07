@@ -101,6 +101,7 @@ module.exports = (app) => {
 
     socket.on('leaveChatRoom', (data, callback) => {
       const room = socketController.getRoom(data);
+      socketController.leaveRoomHandler(data);
       console.log("leaving room: ", room);
       socket.leave(room);
       if (callback) {
