@@ -1,6 +1,9 @@
 const { Mysql } = require("./../../../db");
 const db = Mysql.db;
 
+const socketConfig = require("./socket-config");
+const sessionsController = require("../sesiones/sesiones-controller");
+
 /**
   * Returns the user from the socket
   * @param {number} id Socket user id
@@ -45,10 +48,10 @@ function getRoom(data) {
   let room = "";
   let roleName = (data.rolId === 1) ? "PROFESSOR" : (data.rolId === 2) ? "STUDENT" : ""; 
   switch (data.type) {
-    case "COURSE":
+    case socketConfig.type.COURSE:
       room = `COURSE-${data.id}`;
       break;
-    case "SESSION":
+    case socketConfig.type.SESSION:
       room = `SESSION-${data.id}-${roleName}`;
       break;
     default:
@@ -57,7 +60,26 @@ function getRoom(data) {
   return room;
 }
 
+/**
+ * @param {object} data
+ * @param {string} data.type Type of socket room to join
+ * @param {number} data.id ID of the room to join. If type is SESSION, this is the session ID
+ * @param {number} data.userID ID of the user
+ */
+async function joinRoomHandler(data) {
+  if (data.type === socketConfig.type.SESSION) {
+    const sessionData = {
+      sessionID: data.id,
+    };
+    const userData = {
+      userID: data.userID,
+    };
+    await sessionsController.joinSession(sessionData, userData);
+  }
+}
+
 module.exports = {
   getSocketUserData,
   getRoom,
+  joinRoomHandler,
 };

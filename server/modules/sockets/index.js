@@ -91,6 +91,7 @@ module.exports = (app) => {
 
     socket.on('joinChatRoom', (data, callback) => {
       const room = socketController.getRoom(data);
+      socketController.joinRoomHandler(data)
       console.log("joinning room: ", room);
       socket.join(room);
       if (callback) {

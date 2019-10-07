@@ -5,6 +5,10 @@ module.exports = (sequelize, DataTypes) => {
     "UsuarioSesion",
     {
       calificacion: DataTypes.DECIMAL(10, 2),
+      activo: {
+        type: DataTypes.BOOLEAN,
+        default: true,
+      },
       /*grupo_id: {
         type: DataTypes.INTEGER,
         references: {

@@ -2,6 +2,7 @@ const { Mysql } = require("./../../../db");
 const db = Mysql.db;
 
 const usuarioConfig = require("../usuarios/usuarios-config");
+const sessionsConfig = require("./sessions-config");
 
 /** ID del estado de una sesion terminada */
 const SESION_TERMINADA = 3;
@@ -318,10 +319,48 @@ async function getSessionQuestions(sessionID, userData) {
   }
 }
 
+/**
+ * If the session is PENDING or ACTIVE, joins the user to the session
+ * @param {object} sessionData
+ * @param {number} sessionData.sessionID
+ * @param {object} userData
+ * @param {number} userData.userID
+ */
+async function joinSession(sessionData, userData) {
+  try {
+    const sessionQuery = { id: sessionData.sessionID };
+    const session = await db["Sesion"].findOne({ where: sessionQuery });
+    if (!session) {
+      console.error("Session doesn't exists");
+      return false;
+    }
+    if (session.estado_actual_id === sessionsConfig.status.TERMINATED.id) {
+      return false;
+    }
+
+    const userSession = await db["UsuarioSesion"].findOne({
+      where: {
+        sesion_id: sessionData.sessionID,
+        usuario_id: userData.userID,
+      }
+    });
+    if (userSession) {
+      await userSession.update({
+        activo: true,
+      });
+    } else {
+      await session.addUsuario(userData.userID);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 module.exports = {
   createSession,
   start,
   end,
   getSessionData,
   getSessions,
+  joinSession,
 };
