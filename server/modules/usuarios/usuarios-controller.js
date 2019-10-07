@@ -26,7 +26,7 @@ async function registerStudent(studentData) {
 
     const user = await db["Usuario"].create(student);
 
-    const roleQuery = { nombre: "estudiante" };
+    const roleQuery = { nombre: userConfig.role.STUDENT.text };
     const role = await db["Rol"].findOne({
       where: roleQuery
     });
@@ -71,7 +71,7 @@ async function registerProfessor(professorData) {
 
     const user = await db["Usuario"].create(professor);
 
-    const roleQuery = { nombre: "profesor" };
+    const roleQuery = { nombre: userConfig.role.PROFESSOR.text };
     const role = await db["Rol"].findOne({
       where: roleQuery
     });
@@ -119,7 +119,7 @@ async function crearAdmin(datosUsuario) {
 
     const usuario = await db["Usuario"].create(admin);
     // Luego anado su foreign key de rol_id
-    const rolQuery = { nombre: "admin" };
+    const rolQuery = { nombre: userConfig.role.ADMIN.text };
     const rolAdmin = await db["Rol"].findOne({
       where: rolQuery
     });

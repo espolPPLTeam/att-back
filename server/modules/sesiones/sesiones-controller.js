@@ -4,9 +4,6 @@ const db = Mysql.db;
 const usuarioConfig = require("../usuarios/usuarios-config");
 const sessionsConfig = require("./sessions-config");
 
-/** ID del estado de una sesion terminada */
-const SESION_TERMINADA = 3;
-
 /**
  * Creates the register of a new session in a course
  *
@@ -119,11 +116,11 @@ async function start(sessionData) {
     if (!session) {
       return Promise.reject("Sesion no existe");
     }
-    if (session.get("estado_actual_id") == SESION_TERMINADA) {
+    if (session.get("estado_actual_id") == sessionsConfig.status.TERMINATED.id) {
       return Promise.reject("Sesion finalizada. No se puede actualizar");
     }
 
-    const statusQuery = { nombre: "ACTIVA" };
+    const statusQuery = { nombre: sessionsConfig.status.ACTIVE.text };
     const status = await db["EstadoSesion"].findOne({ where: statusQuery });
 
     await session.update({
@@ -164,11 +161,11 @@ async function end(sessionData) {
     if (!session) {
       return Promise.reject("Sesion no existe");
     }
-    if (session.get("estado_actual_id") == SESION_TERMINADA) {
+    if (session.get("estado_actual_id") == sessionsConfig.status.TERMINATED.id) {
       return Promise.reject("Sesion finalizada. No se puede actualizar");
     }
 
-    const statusQuery = { nombre: "TERMINADA" };
+    const statusQuery = { nombre: sessionsConfig.status.TERMINATED.text };
     const status = await db["EstadoSesion"].findOne({ where: statusQuery });
 
     await session.update({
@@ -387,7 +384,7 @@ async function leaveSession(sessionData, userData) {
         activo: false,
       });
     }
-    
+
   } catch (error) {
     console.error(error);
   }
