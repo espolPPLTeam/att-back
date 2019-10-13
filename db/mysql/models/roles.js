@@ -3,7 +3,22 @@ module.exports = (sequelize, DataTypes) => {
   let Rol = sequelize.define(
     "Rol",
     {
-      nombre: DataTypes.STRING,
+      nombre: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: {
+            msg: "Name is missing"
+          },
+          notEmpty: {
+            msg: "Name must not be empty",
+          },
+          isIn: {
+            args: [["profesor", "estudiante", "admin"]],
+            msg: "Name is not allowed",
+          },
+        },
+      },
     },
     {
       tableName: "roles",

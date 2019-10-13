@@ -11,6 +11,13 @@ const RoleService = {
     const roleQuery = { nombre: roleName };
     const role = await db[RoleModel].findOne({ where: roleQuery });
     return role;
+  },
+  /** 
+   * @param {string} roleName Name of the role to create
+   */
+  async createRole(roleName) {
+    const data = { nombre: roleName };
+    return await db[RoleModel].create(data);
   }
 };
 
