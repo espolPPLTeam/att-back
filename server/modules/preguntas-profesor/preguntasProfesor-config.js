@@ -1,7 +1,7 @@
 const config = {
   status: {
-    PENDING: "CREADA",
-    ACTIVE: "ACTIVADA",
+    PENDING: "PENDIENTE",
+    ACTIVE: "ACTIVA",
     COMPLETED: "TERMINADA",
     PAUSED: "PAUSADA",
   }

@@ -1,10 +1,16 @@
 const { Mysql } = require("./../../../db");
 const db = Mysql.db;
 
+const UserService = require("./user-service");
+const RoleService = require("../roles/role-service");
+const CourseService = require("../paralelos/course-service");
+
 const authenticationService = require("../authentication/authentication-service");
 const userConfig = require("./usuarios-config");
 
 /**
+ * Creates a student if email does not exist. Enrolls the student to the course selected
+ *
  * @param {object} studentData
  * @param {string} studentData.name
  * @param {string} studentData.lastName
@@ -15,28 +21,25 @@ const userConfig = require("./usuarios-config");
  */
 async function registerStudent(studentData) {
   try {
+    const userExists = await UserService.getUserByEmail(studentData.email);
+    if (userExists) {
+      return Promise.reject("User already exists");
+    }
+
     const student = {
       nombres: studentData.name,
       apellidos: studentData.lastName,
       email: studentData.email,
       matricula: studentData.identification,
-      estado: userConfig.status.ACTIVE,
+      clave: authenticationService.hashPassword(studentData.password),
     };
-    student["password"] = authenticationService.hashPassword(studentData.password);;
-
-    const user = await db["Usuario"].create(student);
-
-    const roleQuery = { nombre: userConfig.role.STUDENT.text };
-    const role = await db["Rol"].findOne({
-      where: roleQuery
-    });
+    const user = await UserService.createUser(student);
+    
+    const role = await RoleService.getRoleByName(userConfig.role.STUDENT.text);
     await role.addUsuario(user);
     
     if (studentData.courseID) {
-      const courseQuery = { id: studentData.courseID };
-      const course = await db["Paralelo"].findOne({
-        where: courseQuery
-      });
+      const course = await CourseService.getCourseById(studentData.courseID);
       if (course) {
         await user.addParalelo(studentData.courseID);
       }
