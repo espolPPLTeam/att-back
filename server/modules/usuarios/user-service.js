@@ -3,6 +3,9 @@ const { Mysql } = require("./../../../db");
 const db = Mysql.db;
 
 const UserModel = "Usuario";
+const RoleModel = "Rol";
+const CourseModel = "Paralelo";
+const SubjectModel = "Materia";
 
 /**
  * Interface with the User model in the database
@@ -33,6 +36,40 @@ const UserService = {
       where: {
         email,
       },
+    });
+    return user;
+  },
+
+  /**
+   * Queries the user's information based on its email
+   * Information returned from Role, Course and Subject
+   * @param {string} email User's email
+   */
+  async getUserData(email) {
+    const userProjection = ["id", "email", "rolId", "clave", "nombres", "apellidos"];
+    const roleProjection = ["nombre"];
+    const courseProjection = ["id", "nombre", "codigo"];
+    const subjectProjection = ["id", "nombre", "codigo"];
+
+    const user = await db[UserModel].findOne({
+      where: { email, },
+      attributes: userProjection,
+      include: [
+        {
+          model: db[RoleModel],
+          attributes: roleProjection
+        },
+        {
+          model: db[CourseModel],
+          attributes: courseProjection,
+          include: [
+            {
+              model: db[SubjectModel],
+              attributes: subjectProjection,
+            },
+          ],
+        },
+      ],
     });
     return user;
   }

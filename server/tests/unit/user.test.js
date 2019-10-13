@@ -1,5 +1,6 @@
-const UserService = require("../../modules/usuarios/user-service");
 const databases = require("../../../db");
+
+const UserService = require("../../modules/usuarios/user-service");
 
 const usersData = require("../data/users");
 const errors = require("../../utils/errors");
@@ -204,6 +205,23 @@ describe("Find user by email", () => {
   });
   test("3) Email not passed", async () => {
     const user = await UserService.getUserByEmail(null);
+    expect(user).toBe(null);
+  });
+});
+
+describe("Get user data", () => {
+  beforeAll(async () => {
+    const user = usersData.user();
+    await UserService.createUser(user);
+  });
+  test("1) User exists", async () => {
+    const email = "edison_andre_9@hotmail.com";
+    const user = await UserService.getUserData(email);
+    expect(user).toBeDefined();
+  });
+  test("2) User does not exist", async () => {
+    const email = "edison_andre_8@hotmail.com";
+    const user = await UserService.getUserData(email);
     expect(user).toBe(null);
   });
 });

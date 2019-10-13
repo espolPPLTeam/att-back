@@ -1,6 +1,3 @@
-const { Mysql } = require("./../../../db");
-const db = Mysql.db;
-
 const UserService = require("./user-service");
 const RoleService = require("../roles/role-service");
 const CourseService = require("../paralelos/course-service");
@@ -59,38 +56,37 @@ async function registerStudent(studentData) {
  * @param {string} professorData.email
  * @param {string} professorData.password
  * @param {string} professorData.identification
+ * @param {number} professorData.courseID
  */
 async function registerProfessor(professorData) {
   try {
-    // Primero creo registro de usuario
+    const userExists = await UserService.getUserByEmail(professorData.email);
+    if (userExists) {
+      return Promise.reject("User already exists");
+    }
+
     const professor = {
       nombres: professorData.name,
       apellidos: professorData.lastName,
       email: professorData.email,
       matricula: professorData.identification,
       estado: userConfig.status.ACTIVE,
+      clave: authenticationService.hashPassword(professorData.password),
     };
-    professor["password"] = authenticationService.hashPassword(professorData.password);;
 
-    const user = await db["Usuario"].create(professor);
+    const user = await UserService.createUser(professor);
 
-    const roleQuery = { nombre: userConfig.role.PROFESSOR.text };
-    const role = await db["Rol"].findOne({
-      where: roleQuery
-    });
+    const role = await RoleService.getRoleByName(userConfig.role.PROFESSOR.text);
     await role.addUsuario(user);
-    
+
     if (professorData.courseID) {
-      const courseQuery = { id: professorData.courseID };
-      const course = await db["Paralelo"].findOne({
-        where: courseQuery
-      });
+      const course = await CourseService.getCourseById(professorData.courseID);
       if (course) {
-        await usuario.addParalelo(professorData.courseID);
+        await user.addParalelo(professorData.courseID);
       }
     }
     
-    return Promise.resolve(usuario);
+    return Promise.resolve(user);
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
@@ -100,35 +96,33 @@ async function registerProfessor(professorData) {
 /**
  * Metodo para crear un registro de admin en la base de datos
  *
- * @param {Object} datosUsuario
- * @param {String} datosUsuario.nombres Nombres del admin
- * @param {String} datosUsuario.apellidos Apellidos del admin
- * @param {String} datosUsuario.email Email con el cual el admin hara login en la app
- * @param {String} datosUsuario.clave Clave con la cual el admin hara login en la app
- * @param {String} datosUsuario.matricula Identificacion del admin
+ * @param {Object} userData
+ * @param {String} userData.name Nombres del admin
+ * @param {String} userData.lastName Apellidos del admin
+ * @param {String} userData.email Email con el cual el admin hara login en la app
+ * @param {String} userData.password Clave con la cual el admin hara login en la app
+ * @param {String} userData.identification Identificacion del admin
  */
-async function crearAdmin(datosUsuario) {
+async function registerAdmin(userData) {
   try {
-    // Primero creo registro de usuario
-    const admin = {
-      nombres: datosUsuario.nombres,
-      apellidos: datosUsuario.apellidos,
-      email: datosUsuario.email,
-      matricula: datosUsuario.matricula,
-      estado: "ACTIVO",
-    };
-    const hashedPassword = authenticationService.hashPassword(datosUsuario.clave);
-    admin["clave"] = hashedPassword;
+    const userExists = await UserService.getUserByEmail(userData.email);
+    if (userExists) {
+      return Promise.reject("User already exists");
+    }
 
-    const usuario = await db["Usuario"].create(admin);
-    // Luego anado su foreign key de rol_id
-    const rolQuery = { nombre: userConfig.role.ADMIN.text };
-    const rolAdmin = await db["Rol"].findOne({
-      where: rolQuery
-    });
-    await rolAdmin.addUsuario(usuario);
+    const admin = {
+      nombres: userData.name,
+      apellidos: userData.lastName,
+      email: userData.email,
+      matricula: userData.identification,
+      clave: authenticationService.hashPassword(userData.password),
+    };
+    const user = await UserService.createUser(admin);
     
-    return Promise.resolve(usuario);
+    const role = await RoleService.getRoleByName(userConfig.role.ADMIN.text);
+    await role.addUsuario(user);
+
+    return Promise.resolve(user);
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
@@ -144,7 +138,7 @@ async function crearAdmin(datosUsuario) {
  */
 async function login(email, password) {
   try {
-    const user = await getUserData(email);
+    const user = await UserService.getUserData(email);
     if (!user) {
       return Promise.reject("Usuario no encontrado");
     }
@@ -169,52 +163,6 @@ async function login(email, password) {
 };
 
 /**
- * Returns the user's data for the apps
- * @param {string} email
- */
-async function getUserData(email) {
-  try {
-    const limit = 10;
-    const usuarioQuery = { email: email };
-    const usuarioProjection = ["id", "email", "rolId", "clave", "nombres", "apellidos"];
-    const rolProjection = ["nombre"];
-    const paraleloProjection = ["id", "nombre", "codigo"];
-    const materiaProjection = ["id", "nombre", "codigo"];
-    const sesionProjection = ["id", "nombre", "fecha_inicio", "fecha_fin"];
-
-    const user = await db["Usuario"].findOne({
-      where: usuarioQuery,
-      attributes: usuarioProjection,
-      include: [
-        {
-          model: db["Rol"],
-          attributes: rolProjection
-        },
-        {
-          model: db["Paralelo"],
-          attributes: paraleloProjection,
-          include: [
-            {
-              model: db["Materia"],
-              attributes: materiaProjection
-            },
-          ],
-        },
-      ],
-    });
-
-    if (!user) {
-      return Promise.reject("Usuario no encontrado");
-    }
-
-    return Promise.resolve(user);
-  } catch (error) {
-    console.error(error);
-    return Promise.reject(error);
-  }
-};
-
-/**
  * Gets the necessary user's data for the apps
  * @param {Object} userData
  * @param {String} userData.email User's email
@@ -222,7 +170,7 @@ async function getUserData(email) {
 async function getSessionData(userData) {
   try {
     // Buscar usuario
-    const user = await getUserData(userData.email);
+    const user = await UserService.getUserData(userData.email);
     if (!user) {
       return Promise.reject("Usuario no encontrado");
     }
@@ -240,7 +188,7 @@ async function getSessionData(userData) {
 module.exports = {
   registerStudent,
   registerProfessor,
-  crearAdmin,
+  registerAdmin,
   login,
   getSessionData
 };
