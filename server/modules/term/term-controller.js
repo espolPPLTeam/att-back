@@ -1,23 +1,25 @@
 const { Mysql } = require("./../../../db");
 const db = Mysql.db;
 
+const TermService = require("./term-service");
+
 /**
   * Metodo para crear un registro de terminos en la base de datos
-  * @param {Object} datosTermino
-  * @param {String} datosTermino.nombre
-  * @param {Date} datosTermino.fecha_inicio
-  * @param {Date} datosTermino.fecha_fin
+  * @param {Object} termData
+  * @param {String} termData.nombre
+  * @param {Date} termData.fecha_inicio
+  * @param {Date} termData.fecha_fin
   */
-async function crearTermino(datosTermino, datosUsuario) {
+async function createTerm(termData, userData) {
   try {
-    const termino = await db["Termino"].create({
-      nombre: datosTermino.nombre,
-      fecha_inicio: new Date(datosTermino.fecha_inicio),
-      fecha_fin: new Date(datosTermino.fecha_fin),
-      activo: false,
-      usuario_registro: datosUsuario.id
-    });
-    return Promise.resolve(termino);
+    const data = {
+      nombre: termData.nombre,
+      fecha_inicio: new Date(termData.fecha_inicio),
+      fecha_fin: new Date(termData.fecha_fin),
+      usuario_registro: userData.id
+    };
+    const term = await TermService.createTerm(data);
+    return Promise.resolve(term);
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
@@ -28,17 +30,16 @@ async function crearTermino(datosTermino, datosUsuario) {
   * Metodo para dar por iniciado un termino
   * @param {Number} idTermino ID del termino a iniciar
   */
-async function iniciarTermino(idTermino) {
+async function startTerm(idTermino) {
   try {
-    const termino = await db["Termino"].findOne({
-      where: {
-        id: idTermino
-      }
-    });
-    await termino.update({
+    const term = await TermService.getTermByID(idTermino);
+    if (!term) {
+      throw "Term not found";
+    }
+    await term.update({
       activo: true
     });
-    return Promise.resolve(termino);
+    return Promise.resolve(term);
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
@@ -49,13 +50,12 @@ async function iniciarTermino(idTermino) {
   * Metodo para dar por finalizado un termino
   * @param {Number} idTermino ID del termino a finalizar
   */
-async function finalizarTermino(idTermino) {
+async function endTerm(idTermino) {
   try {
-    const termino = await db["Termino"].findOne({
-      where: {
-        id: idTermino
-      }
-    });
+    const term = await TermService.getTermByID(idTermino);
+    if (!term) {
+      throw "Term not found";
+    }
     await termino.update({
       activo: false
     });
@@ -67,7 +67,7 @@ async function finalizarTermino(idTermino) {
 };
 
 module.exports = {
-  crearTermino,
-  iniciarTermino,
-  finalizarTermino
+  createTerm,
+  startTerm,
+  endTerm,
 };
