@@ -1,4 +1,4 @@
-const professorQuestionController = require("./preguntasProfesor-controller");
+const professorQuestionController = require("./professorQuestion-controller");
 const authenticationService = require("../authentication/authentication-service");
 
 module.exports = (app) => {

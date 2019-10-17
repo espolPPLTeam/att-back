@@ -4,14 +4,14 @@ const app = express();
 
 require("./modules/authentication")(app);
 
-require("./modules/materias")(app);
-require("./modules/roles")(app);
-require("./modules/usuarios")(app);
-require("./modules/terminos")(app);
-require("./modules/paralelos")(app);
-require("./modules/sesiones")(app);
-require("./modules/preguntas-profesor")(app);
-require("./modules/preguntas-estudiante")(app);
-require("./modules/grupos")(app);
+require("./modules/subject")(app);
+require("./modules/role")(app);
+require("./modules/user")(app);
+require("./modules/term")(app);
+require("./modules/course")(app);
+require("./modules/session")(app);
+require("./modules/professor-question")(app);
+require("./modules/student-question")(app);
+require("./modules/group")(app);
 
 module.exports = app;

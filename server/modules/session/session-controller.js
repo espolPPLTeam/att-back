@@ -1,11 +1,11 @@
 const { Mysql } = require("./../../../db");
 const db = Mysql.db;
 
-const CourseService = require("../paralelos/course-service");
+const CourseService = require("../course/course-service");
 const SessionService = require("./session-service");
 
-const usuarioConfig = require("../usuarios/usuarios-config");
-const sessionsConfig = require("./sessions-config");
+const userConfig = require("../user/user-config");
+const sessionConfig = require("./session-config");
 
 /**
  * Creates the register of a new session in a course
@@ -26,7 +26,7 @@ async function createSession(sessionData, userData) {
     let data = {
       nombre: sessionData.nombre,
       activo: false,
-      estado_actual_id: sessionsConfig.status.PENDING.id,
+      estado_actual_id: sessionConfig.status.PENDING.id,
     };
     const session = await SessionService.createSession(data);
 
@@ -106,11 +106,11 @@ async function start(sessionData) {
     if (!session) {
       return Promise.reject("Sesion no existe");
     }
-    if (session.get("estado_actual_id") == sessionsConfig.status.TERMINATED.id) {
+    if (session.get("estado_actual_id") == sessionConfig.status.TERMINATED.id) {
       return Promise.reject("Sesion finalizada. No se puede actualizar");
     }
 
-    const statusQuery = { nombre: sessionsConfig.status.ACTIVE.text };
+    const statusQuery = { nombre: sessionConfig.status.ACTIVE.text };
     const status = await db["EstadoSesion"].findOne({ where: statusQuery });
 
     await session.update({
@@ -151,11 +151,11 @@ async function end(sessionData) {
     if (!session) {
       return Promise.reject("Sesion no existe");
     }
-    if (session.get("estado_actual_id") == sessionsConfig.status.TERMINATED.id) {
+    if (session.get("estado_actual_id") == sessionConfig.status.TERMINATED.id) {
       return Promise.reject("Sesion finalizada. No se puede actualizar");
     }
 
-    const statusQuery = { nombre: sessionsConfig.status.TERMINATED.text };
+    const statusQuery = { nombre: sessionConfig.status.TERMINATED.text };
     const status = await db["EstadoSesion"].findOne({ where: statusQuery });
 
     await session.update({
@@ -279,7 +279,7 @@ async function getSessionQuestions(sessionID, userData) {
     });
 
     let studentQuestionsQuery = { sesion_id: sessionID };
-    if (userData.rol === usuarioConfig.role.STUDENT.text) {
+    if (userData.rol === userConfig.role.STUDENT.text) {
       studentQuestionsQuery["creador_id"] = userData.id;
     }
     /** @type {Array} */
@@ -321,7 +321,7 @@ async function joinSession(sessionData, userData) {
       console.error("Session doesn't exists");
       return false;
     }
-    if (session.estado_actual_id === sessionsConfig.status.TERMINATED.id) {
+    if (session.estado_actual_id === sessionConfig.status.TERMINATED.id) {
       return false;
     }
 
@@ -358,7 +358,7 @@ async function leaveSession(sessionData, userData) {
       console.error("Session doesn't exists");
       return false;
     }
-    if (session.estado_actual_id === sessionsConfig.status.TERMINATED.id) {
+    if (session.estado_actual_id === sessionConfig.status.TERMINATED.id) {
       console.error("Session is terminated");
       return false;
     }

@@ -1,6 +1,6 @@
 const databases = require("../../../db");
 
-const UserService = require("../../modules/usuarios/user-service");
+const UserService = require("../../modules/user/user-service");
 
 const usersData = require("../data/users");
 const errors = require("../../utils/errors");

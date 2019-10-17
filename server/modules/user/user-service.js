@@ -1,4 +1,4 @@
-const userConfig = require("./usuarios-config");
+const userConfig = require("./user-config");
 const { Mysql } = require("./../../../db");
 const db = Mysql.db;
 

@@ -1,6 +1,6 @@
 const databases = require("../../../db");
 
-const RoleService = require("../../modules/roles/role-service");
+const RoleService = require("../../modules/role/role-service");
 
 const errors = require("../../utils/errors");
 

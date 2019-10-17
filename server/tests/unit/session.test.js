@@ -1,6 +1,6 @@
 const databases = require("../../../db");
 
-const SessionService = require("../../modules/sesiones/session-service");
+const SessionService = require("../../modules/session/session-service");
 const sessionData = require("../data/session");
 
 const errors = require("../../utils/errors");

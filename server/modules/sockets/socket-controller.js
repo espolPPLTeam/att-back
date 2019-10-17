@@ -2,7 +2,7 @@ const { Mysql } = require("./../../../db");
 const db = Mysql.db;
 
 const socketConfig = require("./socket-config");
-const sessionsController = require("../sesiones/sesiones-controller");
+const sessionController = require("../session/session-controller");
 
 /**
   * Returns the user from the socket
@@ -74,7 +74,7 @@ async function joinRoomHandler(data) {
     const userData = {
       userID: data.userID,
     };
-    await sessionsController.joinSession(sessionData, userData);
+    await sessionController.joinSession(sessionData, userData);
   }
 }
 
@@ -92,7 +92,7 @@ async function leaveRoomHandler(data) {
     const userData = {
       userID: data.userID,
     };
-    await sessionsController.leaveSession(sessionData, userData);
+    await sessionController.leaveSession(sessionData, userData);
   }
 }
 

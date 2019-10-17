@@ -1,9 +1,9 @@
 const UserService = require("./user-service");
-const RoleService = require("../roles/role-service");
-const CourseService = require("../paralelos/course-service");
+const RoleService = require("../role/role-service");
+const CourseService = require("../course/course-service");
 
 const authenticationService = require("../authentication/authentication-service");
-const userConfig = require("./usuarios-config");
+const userConfig = require("./user-config");
 
 /**
  * Creates a student if email does not exist. Enrolls the student to the course selected

@@ -1,7 +1,7 @@
 const { Mysql } = require("./../../../db");
 const db = Mysql.db;
 
-const preguntasProfesorConfig = require("./preguntasProfesor-config");
+const professorQuestionConfig = require("./professorQuestion-config");
 
 /** ID del estado de una sesion terminada */
 const SESION_TERMINADA = 3;
@@ -34,7 +34,7 @@ async function createQuestion(questionData, userData) {
       imagen: questionData.imagen,
       creador_id: userData.id,
       sesion_id: questionData.idSesion,
-      estado: preguntasProfesorConfig.status.PENDING,
+      estado: professorQuestionConfig.status.PENDING,
     };
     const question = await db["PreguntaProfesor"].create(data);
 
