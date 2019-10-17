@@ -37,6 +37,37 @@ const ProfessorQuestionService = {
         }
       ],
     })
+  },
+  /**
+   * @param {object} questionData
+   * @param {string} questionData.titulo
+   * @param {string} questionData.texto
+   * @param {string} questionData.imagen
+   * @param {number} questionData.creador_id
+   * @param {number} questionData.sesion_id
+   * @param {string} questionData.estado
+   */
+  async createQuestion(questionData) {
+    return await db[ProfessorQuestionModel].create(questionData);
+  },
+  /**
+   * @param {number} questionID
+   */
+  async getQuestionByID(questionID) {
+    return await db[ProfessorQuestionModel].findOne({
+      where: { id: questionID },
+    });
+  },
+  /**
+   * @param {object} answerData
+   * @param {string} answerData.texto
+   * @param {number} answerData.creador_id
+   * @param {number} answerData.questionID
+   */
+  async answerQuestion(answerData) {
+    const answer = await db[AnswerModel].create(answerData);
+    answer.setPregunta(answerData.questionID);
+    return answer;
   }
 };
 

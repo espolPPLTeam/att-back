@@ -1,8 +1,5 @@
-const { Mysql } = require("./../../../db");
-const db = Mysql.db;
-
-/** ID del estado de una sesion terminada */
-const SESION_TERMINADA = 3;
+const SessionService = require("../session/session-service");
+const StudentQuestionService = require("./studentQuestion-service");
 
 /**
   * Crea un registro de pregunta-profesor
@@ -20,12 +17,11 @@ const SESION_TERMINADA = 3;
   */
 async function createQuestion(questionData, userData) {
   try {
-    const sessionQuery = { id: questionData.idSesion };
-    const session = await db["Sesion"].findOne({ where: sessionQuery });
+    const session = await SessionService.getSessionByID(questionData.idSesion);
     if (!session) {
       return Promise.reject("Sesion no existe");
     }
-    if (session.get("estado_actual_id") == SESION_TERMINADA) {
+    if (session.get("estado_actual_id") == sessionConfig.status.TERMINATED.id) {
       return Promise.reject("Sesion terminada. No se puede anadir pregunta");
     }
 
@@ -35,7 +31,7 @@ async function createQuestion(questionData, userData) {
       creador_id: userData.id,
       sesion_id: questionData.idSesion
     };
-    const question = await db["PreguntaEstudiante"].create(data);
+    const question = await StudentQuestionService.createQuestion(data);
     
     process.emit("newStudentQuestion", question.dataValues);
 

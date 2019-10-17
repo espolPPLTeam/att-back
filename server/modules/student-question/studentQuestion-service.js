@@ -29,6 +29,16 @@ const StudentQuestionService = {
         }
       ],
     })
+  },
+  /**
+   * @param {object} questionData
+   * @param {string} questionData.texto
+   * @param {string} questionData.imagen
+   * @param {number} questionData.creador_id
+   * @param {number} questionData.sesion_id
+   */
+  async createQuestion(questionData) {
+    return await db[StudentQuestionModel].create(questionData);
   }
 };
 

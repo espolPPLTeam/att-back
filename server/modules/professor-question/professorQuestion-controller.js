@@ -1,10 +1,8 @@
-const { Mysql } = require("./../../../db");
-const db = Mysql.db;
-
 const professorQuestionConfig = require("./professorQuestion-config");
+const sessionConfig = require("../session/session-config");
 
-/** ID del estado de una sesion terminada */
-const SESION_TERMINADA = 3;
+const SessionService = require("../session/session-service");
+const ProfessorQuestionService = require("./professorQuestion-service");
 
 /**
   * Creates the register of a new Professor Question
@@ -19,12 +17,11 @@ const SESION_TERMINADA = 3;
   */
 async function createQuestion(questionData, userData) {
   try {
-    const sessionQuery = { id: questionData.idSesion };
-    const session = await db["Sesion"].findOne({ where: sessionQuery });
+    const session = await SessionService.getSessionByID(questionData.idSesion);
     if (!session) {
       return Promise.reject("Sesion no existe");
     }
-    if (session.get("estado_actual_id") == SESION_TERMINADA) {
+    if (session.get("estado_actual_id") == sessionConfig.status.TERMINATED.id) {
       return Promise.reject("Sesion terminada. No se puede anadir pregunta");
     }
 
@@ -36,7 +33,7 @@ async function createQuestion(questionData, userData) {
       sesion_id: questionData.idSesion,
       estado: professorQuestionConfig.status.PENDING,
     };
-    const question = await db["PreguntaProfesor"].create(data);
+    const question = await ProfessorQuestionService.createQuestion(data);
 
     return Promise.resolve(question);
   } catch (error) {
@@ -56,17 +53,16 @@ async function createQuestion(questionData, userData) {
  */
 async function answerQuestion(answerData, userData) {
   try {
-    const questionQuery = { id: answerData.idPregunta };
-    const question = await db["PreguntaProfesor"].findOne({ where: questionQuery });
+    const question = await ProfessorQuestionService.getQuestionByID(answerData.idPregunta);
     if (!question) {
       return Promise.reject("Pregunta no existe");
     }
     const data = {
       texto: answerData.texto,
-      creador_id: userData.id
+      creador_id: userData.id,
+      questionID: question.id,
     };
-    const answer = await db["Respuesta"].create(data);
-    answer.setPregunta(question.id);
+    const answer = await ProfessorQuestionService.answerQuestion(data);
 
     //=====================//
     //     SEND SOCKET     //
@@ -93,8 +89,7 @@ async function answerQuestion(answerData, userData) {
  */
 async function updateQuestionStatus(questionData) {
   try {
-    const questionQuery = { id: questionData.questionID };
-    const question = await db["PreguntaProfesor"].findOne({ where: questionQuery });
+    const question = await ProfessorQuestionService.getQuestionByID(questionData.questionID);
     if (!question) {
       return Promise.reject("Pregunta no existe");
     }

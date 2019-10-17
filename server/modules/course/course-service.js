@@ -15,7 +15,7 @@ const CourseService = {
       attributes: ["id", "nombre"],
       include: [
         {
-          model: db[CourseModel],
+          model: db[SubjectModel],
           attributes: ["id", "nombre"],
         }
       ]
