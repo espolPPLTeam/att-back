@@ -1,23 +1,14 @@
 const courseController = require("./course-controller");
 
 module.exports = (app) => {
-  app.route("/paralelos")
+  app.route("/course")
     .post(async (req, res) => {
       try {
-        const paralelo = await courseController.crearParalelo(req.body);
-        res.send({ status: 200, data: paralelo });
+        const course = await courseController.createCourse(req.body);
+        res.send({ status: 200, data: course });
       } catch (error) {
         res.status(500).send({ status: 500, error });
       }
     });
 
-  app.route("/paralelos/agregarUsuario")
-    .put(async (req, res) => {
-      try {
-        const data = await courseController.agregarUsuario(req.body.idUsuario, req.body.idParalelo);
-        res.send({ status: 200, data });
-      } catch (error) {
-        res.status(500).send({ status: 500, error });
-      }
-    });
 };

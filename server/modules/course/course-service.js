@@ -10,7 +10,7 @@ const CourseService = {
    */
   async getCourseById(courseID) {
     const courseQuery = { id: courseID };
-    return await db[CourseModel].findOne({
+    const course = await db[CourseModel].findOne({
       where: courseQuery,
       attributes: ["id", "nombre"],
       include: [
@@ -20,6 +20,13 @@ const CourseService = {
         }
       ]
     });
+    return course;
+  },
+  async createCourse(courseData) {
+    const course = await db[CourseModel].create(courseData);
+    await course.setMateria(courseData.subjectID);
+    await course.setTermino(courseData.termID);
+    return course;
   }
 };
 
