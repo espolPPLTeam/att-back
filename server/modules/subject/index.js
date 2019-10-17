@@ -1,19 +1,9 @@
 const subjectController = require("./subject-controller");
 
 module.exports = (app) => {
-  app.route("/materias")
-    .get(async (req, res) => {
-      try {
-        const data = await subjectController.obtenerMaterias(req.query.limit, req.query.offset);
-        res.send({ status: 200, data });
-      } catch (error) {
-        res.status(500).send({ status: 500, error });
-      }
-    });
-
-  app.route("/materias")
+  app.route("/subject")
     .post(async (req, res) => {
-      const data = await subjectController.crearMateria(req.body);
+      const data = await subjectController.createSubject(req.body);
       res.send({ status: 200, data: data.id });
     });
 };
