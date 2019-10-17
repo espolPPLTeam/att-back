@@ -1,6 +1,9 @@
 const { Mysql } = require("./../../../db");
 const db = Mysql.db;
 
+const CourseService = require("../paralelos/course-service");
+const SessionService = require("./session-service");
+
 const usuarioConfig = require("../usuarios/usuarios-config");
 const sessionsConfig = require("./sessions-config");
 
@@ -15,30 +18,17 @@ const sessionsConfig = require("./sessions-config");
  */
 async function createSession(sessionData, userData) {
   try {
-    const courseQuery = { id: sessionData.idParalelo };
-    const course = await db["Paralelo"].findOne({
-      where: courseQuery,
-      attributes: ["id", "nombre"],
-      include: [
-        {
-          model: db["Materia"],
-          attributes: ["id", "nombre"],
-        }
-      ]
-    });
+    const course = await CourseService.getCourseById(sessionData.idParalelo);
     if (!course) {
       return Promise.reject("Paralelo not found.");
     }
 
-    const statusQuery = { nombre: "PENDIENTE" };
-    const status = await db["EstadoSesion"].findOne({ where: statusQuery });
-
     let data = {
       nombre: sessionData.nombre,
       activo: false,
-      estado_actual_id: status.id,
+      estado_actual_id: sessionsConfig.status.PENDING.id,
     };
-    const session = await db["Sesion"].create(data);
+    const session = await SessionService.createSession(data);
 
     session.setParalelo(course.id);
     session.setRegistrador(userData.id);

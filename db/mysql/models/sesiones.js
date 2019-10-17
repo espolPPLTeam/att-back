@@ -3,7 +3,22 @@ module.exports = (sequelize, DataTypes) => {
   let Sesion = sequelize.define(
     "Sesion",
     {
-      nombre: DataTypes.STRING,
+      nombre: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: {
+            msg: "Name is missing",
+          },
+          notEmpty: {
+            msg: "Name must not be empty",
+          },
+          not: {
+            args: /[`~,<>;':"/[\]|{}()=_+-]/,
+            msg: "Name cannot contain special characters",
+          },
+        },
+      },
       activo: DataTypes.BOOLEAN,
       fecha_fin: DataTypes.DATE,
       fecha_inicio: DataTypes.DATE,
