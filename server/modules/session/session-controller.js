@@ -1,8 +1,7 @@
-const { Mysql } = require("./../../../db");
-const db = Mysql.db;
-
 const CourseService = require("../course/course-service");
 const SessionService = require("./session-service");
+const ProfessorQuestionService = require("../professor-question/professorQuestion-service");
+const StudentQuestionService = require("../student-question/studentQuestion-service");
 
 const userConfig = require("../user/user-config");
 const sessionConfig = require("./session-config");
@@ -61,27 +60,7 @@ async function getSessions(queryData) {
     const sessionQuery = {
       paralelo_id: queryData.paralelo,
     };
-    let sessions = await db["Sesion"].findAll({
-      where: sessionQuery,
-      attributes: ["nombre", "activo", "id"],
-      include: [
-        {
-          model: db["Paralelo"],
-          attributes: ["nombre", "codigo", "id"],
-          include: [
-            {
-              model: db["Materia"],
-              attributes: ["nombre", "codigo", "id"],
-            }
-          ]
-        },
-        {
-          model: db["EstadoSesion"],
-          as: "estadoActual",
-          attributes: ["id", "nombre"]
-        }
-      ]
-    });
+    let sessions = await SessionService.getSessions(sessionQuery);
     if (!sessions) {
       sessions = [];
     }
@@ -101,8 +80,7 @@ async function getSessions(queryData) {
  */
 async function start(sessionData) {
   try {
-    const sessionQuery = { id: sessionData.idSesion };
-    const session = await db["Sesion"].findOne({ where: sessionQuery });
+    const session = await SessionService.getSessionByID(sessionData.idSesion);
     if (!session) {
       return Promise.reject("Sesion no existe");
     }
@@ -110,11 +88,8 @@ async function start(sessionData) {
       return Promise.reject("Sesion finalizada. No se puede actualizar");
     }
 
-    const statusQuery = { nombre: sessionConfig.status.ACTIVE.text };
-    const status = await db["EstadoSesion"].findOne({ where: statusQuery });
-
     await session.update({
-      estado_actual_id: status.id,
+      estado_actual_id: sessionConfig.status.ACTIVE.id,
       fecha_inicio: new Date(),
       activo: true,
     });
@@ -146,8 +121,7 @@ async function start(sessionData) {
   */
 async function end(sessionData) {
   try {
-    const sessionQuery = { id: sessionData.idSesion };
-    const session = await db["Sesion"].findOne({ where: sessionQuery });
+    const session = await SessionService.getSessionByID(sessionData.idSesion);
     if (!session) {
       return Promise.reject("Sesion no existe");
     }
@@ -155,11 +129,8 @@ async function end(sessionData) {
       return Promise.reject("Sesion finalizada. No se puede actualizar");
     }
 
-    const statusQuery = { nombre: sessionConfig.status.TERMINATED.text };
-    const status = await db["EstadoSesion"].findOne({ where: statusQuery });
-
     await session.update({
-      estado_actual_id: status.id,
+      estado_actual_id: sessionConfig.status.TERMINATED.id,
       fecha_fin: new Date(),
       activo: false,
     });
@@ -195,30 +166,7 @@ async function end(sessionData) {
  */
 async function getSessionData(sessionData, userData) {
   try {
-    const sessionQuery = { id: sessionData.idSesion };
-    const sessionProjection = ["nombre", "fecha_inicio", "fecha_fin"];
-    const userProjection = ["id", "nombres", "apellidos", "email"];
-    const sessionPopulate = [
-      {
-        model: db["Paralelo"],
-        attributes: ["nombre", "codigo", "id"]
-      },
-      {
-        model: db["Usuario"],
-        as: "registrador",
-        attributes: userProjection
-      },
-      {
-        model: db["EstadoSesion"],
-        as: "estadoActual",
-        attributes: ["id", "nombre"]
-      }
-    ];
-    const session = await db["Sesion"].findOne({
-      where: sessionQuery,
-      attributes: sessionProjection,
-      include: sessionPopulate,
-    });
+    const session = await SessionService.getSessionData(sessionData.idSesion);
     if (!session) {
       return Promise.reject("Sesion no existe");
     }
@@ -251,49 +199,13 @@ async function getSessionData(sessionData, userData) {
  */
 async function getSessionQuestions(sessionID, userData) {
   try {
-    const professorQuestionsQuery = { sesion_id: sessionID };
-    const usuarioProjection = ["id", "nombres", "apellidos", "email"];
-    /** @type {Array} */
-    const professorQuestions = await db["PreguntaProfesor"].findAll({
-      where: professorQuestionsQuery,
-      attributes: ["id", "texto", "imagen", "createdAt", "titulo", "estado"],
-      include: [
-        {
-          model: db["Respuesta"],
-          as: "respuestas",
-          attributes: ["id", "texto", "calificacion", "createdAt", "imagen"],
-          include: [
-            {
-              model: db["Usuario"],
-              as: "creador",
-              attributes: usuarioProjection,
-            }
-          ]
-        },
-        {
-          model: db["Usuario"],
-          as: "creador",
-          attributes: usuarioProjection
-        }
-      ],
-    });
+    const professorQuestions = await ProfessorQuestionService.getSessionQuestions(sessionID);
 
-    let studentQuestionsQuery = { sesion_id: sessionID };
+    let userID = null;
     if (userData.rol === userConfig.role.STUDENT.text) {
-      studentQuestionsQuery["creador_id"] = userData.id;
+      userID = userData.id;
     }
-    /** @type {Array} */
-    const studentQuestions = await db["PreguntaEstudiante"].findAll({
-      where: studentQuestionsQuery,
-      attributes: ["id", "texto", "imagen", "createdAt"],
-      include: [
-        {
-          model: db["Usuario"],
-          as: "creador",
-          attributes: usuarioProjection,
-        },
-      ],
-    });
+    const studentQuestions = await StudentQuestionService.getSessionQuestions(sessionID, userID);
 
     const data = {
       preguntasProfesor: professorQuestions.map(question => question.dataValues),
@@ -315,8 +227,7 @@ async function getSessionQuestions(sessionID, userData) {
  */
 async function joinSession(sessionData, userData) {
   try {
-    const sessionQuery = { id: sessionData.sessionID };
-    const session = await db["Sesion"].findOne({ where: sessionQuery });
+    const session = await SessionService.getSessionByID(sessionData.sessionID);
     if (!session) {
       console.error("Session doesn't exists");
       return false;
@@ -324,13 +235,7 @@ async function joinSession(sessionData, userData) {
     if (session.estado_actual_id === sessionConfig.status.TERMINATED.id) {
       return false;
     }
-
-    const userSession = await db["UsuarioSesion"].findOne({
-      where: {
-        sesion_id: sessionData.sessionID,
-        usuario_id: userData.userID,
-      }
-    });
+    const userSession = await SessionService.getUserInSession(userData.userID, sessionData.sessionID);
     if (userSession) {
       await userSession.update({
         activo: true,
@@ -352,8 +257,7 @@ async function joinSession(sessionData, userData) {
  */
 async function leaveSession(sessionData, userData) {
   try {
-    const sessionQuery = { id: sessionData.sessionID };
-    const session = await db["Sesion"].findOne({ where: sessionQuery });
+    const session = await SessionService.getSessionByID(sessionData.sessionID);
     if (!session) {
       console.error("Session doesn't exists");
       return false;
@@ -363,12 +267,7 @@ async function leaveSession(sessionData, userData) {
       return false;
     }
 
-    const userSession = await db["UsuarioSesion"].findOne({
-      where: {
-        sesion_id: sessionData.sessionID,
-        usuario_id: userData.userID,
-      }
-    });
+    const userSession = await SessionService.getUserInSession(userData.userID, sessionData.sessionID);
     if (userSession) {
       await userSession.update({
         activo: false,

@@ -10,7 +10,7 @@ beforeAll(async () => {
   console.log("DB connected...")
 });
 
-describe("Session creation", () => {
+/*describe("Session creation", () => {
 
   let sessionMock = {};
 
@@ -56,5 +56,23 @@ describe("Session creation", () => {
       expect(error.errors[0]).toBeDefined();
       expect(error.errors[0].message).toBe("Name cannot contain special characters");
     }
+  });
+});*/
+
+describe("Get sessions", () => {
+  beforeAll(async () => {
+    const sessionMock = sessionData.session();
+    const session = await SessionService.createSession(sessionMock);
+  });
+  test("1) Successful scenario", async () => {
+    const query = { paralelo_id: 1 };
+    const session = await SessionService.getSessions(query);
+    expect(session).toBeDefined();
+    expect(session).toStrictEqual([]);
+  });
+  test("2) No query", async () => {
+    const session = await SessionService.getSessions(null);
+    expect(session).toBeDefined();
+    expect(session).toStrictEqual([]);
   });
 });
