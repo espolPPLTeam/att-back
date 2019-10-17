@@ -20,7 +20,7 @@ const StudentQuestionService = {
     }
     return await db[StudentQuestionModel].findAll({
       where: studentQuestionsQuery,
-      attributes: ["id", "texto", "imagen", "createdAt", "estado"],
+      attributes: ["id", "texto", "imagen", "createdAt"],
       include: [
         {
           model: db[UserModel],

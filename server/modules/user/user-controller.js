@@ -169,7 +169,6 @@ async function login(email, password) {
  */
 async function getSessionData(userData) {
   try {
-    // Buscar usuario
     const user = await UserService.getUserData(userData.email);
     if (!user) {
       return Promise.reject("Usuario no encontrado");
