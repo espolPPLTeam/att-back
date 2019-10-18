@@ -1,5 +1,6 @@
 const SessionService = require("../session/session-service");
 const StudentQuestionService = require("./studentQuestion-service");
+const sessionConfig = require("../session/session-config");
 
 /**
   * Crea un registro de pregunta-profesor

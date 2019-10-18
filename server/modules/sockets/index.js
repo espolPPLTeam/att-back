@@ -83,7 +83,7 @@ module.exports = (app) => {
    */
   process.on("answerQuestion", async (data) => {
     const room = `SESSION-${data.sesionId}-PROFESSOR`;
-    data["user"] = await socketController.getSocketUserData(data.creador_id);
+    data["creador"] = await socketController.getSocketUserData(data.creador_id);
     io.to(room).emit("answerQuestion", data);
   });
 

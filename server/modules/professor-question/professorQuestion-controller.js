@@ -102,6 +102,7 @@ async function updateQuestionStatus(questionData) {
     //     SEND SOCKET     //
     //=====================//
     const socketData = Object.assign({},   questionData);
+    socketData["question"] = questionData.questionID;
     socketData["sesionId"] = question.dataValues.sesionId;
     process.emit("updateProfessorQuestionStatus", socketData);
 
