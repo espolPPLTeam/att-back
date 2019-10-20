@@ -16,7 +16,7 @@ const StudentQuestionService = {
     const usuarioProjection = ["id", "nombres", "apellidos", "email"];
     let studentQuestionsQuery = { sesion_id: sessionID };
     if (userID) {
-      studentQuestionsQuery["creador_id"] = userID
+      studentQuestionsQuery["creador_id"] = userID;
     }
     return await db[StudentQuestionModel].findAll({
       where: studentQuestionsQuery,
@@ -28,7 +28,7 @@ const StudentQuestionService = {
           attributes: usuarioProjection
         }
       ],
-    })
+    });
   },
   /**
    * @param {object} questionData

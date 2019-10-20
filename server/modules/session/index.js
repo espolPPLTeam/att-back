@@ -5,8 +5,8 @@ module.exports = (app) => {
   app.route("/sessions/createSession")
     .post(async (req, res) => {
       try {
-      	const token = req.headers["x-access-token"];
-      	const userData = authenticationService.decodeToken(token);
+        const token = req.headers["x-access-token"];
+        const userData = authenticationService.decodeToken(token);
         const session = await sessionController.createSession(req.body, userData);
         res.send({ status: 200, data: session });
       } catch (error) {

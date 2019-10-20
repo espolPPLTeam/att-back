@@ -21,7 +21,7 @@ async function createSubject(subjectData, userData) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 module.exports = {
   createSubject,

@@ -5,8 +5,8 @@ module.exports = (app) => {
   app.route("/questions/createProfessorQuestion")
     .post(async (req, res) => {
       try {
-      	const token = req.headers["x-access-token"];
-      	const userData = authenticationService.decodeToken(token);
+        const token = req.headers["x-access-token"];
+        const userData = authenticationService.decodeToken(token);
         const question = await professorQuestionController.createQuestion(req.body, userData);
         res.send({ status: 200, data: question });
       } catch (error) {

@@ -9,7 +9,7 @@ const socketController = require("./socket-controller");
  */
 
 module.exports = (app) => {
-  const io = require('socket.io').listen(app);
+  const io = require("socket.io").listen(app);
   io.origins("*:*");
 
   io.use((socket, next) => {
@@ -89,9 +89,9 @@ module.exports = (app) => {
 
   io.on("connection", (socket) => {
 
-    socket.on('joinChatRoom', (data, callback) => {
+    socket.on("joinChatRoom", (data, callback) => {
       const room = socketController.getRoom(data);
-      socketController.joinRoomHandler(data)
+      socketController.joinRoomHandler(data);
       console.log("joinning room: ", room);
       socket.join(room);
       if (callback) {
@@ -99,7 +99,7 @@ module.exports = (app) => {
       }
     });
 
-    socket.on('leaveChatRoom', (data, callback) => {
+    socket.on("leaveChatRoom", (data, callback) => {
       const room = socketController.getRoom(data);
       socketController.leaveRoomHandler(data);
       console.log("leaving room: ", room);

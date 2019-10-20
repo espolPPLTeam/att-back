@@ -10,7 +10,7 @@ const sessionController = require("../session/session-controller");
   */
 async function getSocketUserData(id) {
   try {
-    console.log("id>>>", id)
+    console.log("id>>>", id);
     const userQuery = { id };
     const userProjection = ["id", "email", "rolId", "nombres", "apellidos"];
     const roleProjection = ["nombre"];
@@ -34,7 +34,7 @@ async function getSocketUserData(id) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 /**
  * Returns the room the user is joining or leaving
@@ -48,14 +48,14 @@ function getRoom(data) {
   let room = "";
   let roleName = (data.rolId === 1) ? "PROFESSOR" : (data.rolId === 2) ? "STUDENT" : ""; 
   switch (data.type) {
-    case socketConfig.type.COURSE:
-      room = `COURSE-${data.id}`;
-      break;
-    case socketConfig.type.SESSION:
-      room = `SESSION-${data.id}-${roleName}`;
-      break;
-    default:
-      break;
+  case socketConfig.type.COURSE:
+    room = `COURSE-${data.id}`;
+    break;
+  case socketConfig.type.SESSION:
+    room = `SESSION-${data.id}-${roleName}`;
+    break;
+  default:
+    break;
   }
   return room;
 }

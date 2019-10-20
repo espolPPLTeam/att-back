@@ -7,11 +7,11 @@ const RoleService = require("./role-service");
 async function createRole(roleName) {
   try {
     const role = await RoleService.createRole(roleName);
-    return Promise.resolve(rol);
+    return Promise.resolve(role);
   } catch (error) {
     return Promise.reject(error);
   }
-};
+}
 
 module.exports = {
   createRole,

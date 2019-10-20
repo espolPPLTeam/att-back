@@ -41,7 +41,7 @@ async function createQuestion(questionData, userData) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 
 module.exports = {

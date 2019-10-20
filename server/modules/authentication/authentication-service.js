@@ -11,7 +11,7 @@ const SECRET = process.env.JWT_SECRET;
 function hashPassword(plainTextPassword) {
   const saltRounds = 10;
   return bcrypt.hashSync(plainTextPassword, saltRounds);
-};
+}
 
 /**
   * Usa la librer'ia bcrypt para comparar 2 contrasennas
@@ -23,7 +23,7 @@ async function comparePassword(passwordDB, passwordEntered) {
   /** @type Boolean */
   const result = await bcrypt.compare(passwordEntered, passwordDB);
   return result;
-};
+}
 
 /**
   * Crea un jsonwebtoken con ciertos datos del usuario
@@ -41,20 +41,16 @@ function createToken(id, email, rol) {
   /** Encrypted jsonwebtoken */
   const token = jwt.sign(payload, SECRET);
   return token;
-};
+}
 
 /**
   * Obtiene el payload codificado en un token
   * @param {String} token Token a decodificar
   */
 function decodeToken(token) {
-  try {
-    const data = jwt.verify(token, SECRET);
-    return data;
-  } catch (error) {
-    throw error;
-  }
-};
+  const data = jwt.verify(token, SECRET);
+  return data;
+}
 
 module.exports = {
   hashPassword,

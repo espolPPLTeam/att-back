@@ -1,6 +1,3 @@
-const { Mysql } = require("./../../../db");
-const db = Mysql.db;
-
 const CourseService = require("./course-service");
 
 /**
@@ -22,7 +19,7 @@ async function createCourse(courseData, userData) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 module.exports = {
   createCourse,

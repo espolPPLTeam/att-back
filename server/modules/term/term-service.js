@@ -15,7 +15,7 @@ const TermService = {
    */
   async createTerm(termData) {
     termData["activo"] = false;
-    return await db[TermModel].create(termData)
+    return await db[TermModel].create(termData);
   },
   /**
    * @param {number} termID

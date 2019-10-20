@@ -1,6 +1,3 @@
-const { Mysql } = require("./../../../db");
-const db = Mysql.db;
-
 const TermService = require("./term-service");
 
 /**
@@ -24,7 +21,7 @@ async function createTerm(termData, userData) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 /**
   * Metodo para dar por iniciado un termino
@@ -44,7 +41,7 @@ async function startTerm(idTermino) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 /**
   * Metodo para dar por finalizado un termino
@@ -56,15 +53,15 @@ async function endTerm(idTermino) {
     if (!term) {
       throw "Term not found";
     }
-    await termino.update({
+    await term.update({
       activo: false
     });
-    return Promise.resolve(termino);
+    return Promise.resolve(term);
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 module.exports = {
   createTerm,

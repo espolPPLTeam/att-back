@@ -19,9 +19,9 @@ async function crearEstado(datosEstado, datosUsuario) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 
 module.exports = {
-	crearEstado
+  crearEstado
 };

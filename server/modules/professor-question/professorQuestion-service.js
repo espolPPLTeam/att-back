@@ -36,7 +36,7 @@ const ProfessorQuestionService = {
           attributes: usuarioProjection
         }
       ],
-    })
+    });
   },
   /**
    * @param {object} questionData

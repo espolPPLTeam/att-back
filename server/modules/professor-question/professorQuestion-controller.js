@@ -40,7 +40,7 @@ async function createQuestion(questionData, userData) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 /**
  * Create an answer for a Professor Question
@@ -78,7 +78,7 @@ async function answerQuestion(answerData, userData) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 /**
  * Updates the status of an existing question
@@ -111,7 +111,7 @@ async function updateQuestionStatus(questionData) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 module.exports = {
   createQuestion,

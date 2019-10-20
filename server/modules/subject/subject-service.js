@@ -13,7 +13,7 @@ const SubjectService = {
    * @param {number} subjectData.usuario_registro
    */
   async createSubject(subjectData) {
-    return await db[SubjectModel].create(subjectData)
+    return await db[SubjectModel].create(subjectData);
   },
   /**
    * @param {number} termID

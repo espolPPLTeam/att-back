@@ -1,33 +1,33 @@
-const fs = require('fs');
-const winston = require('winston');
-const WinstonRotateFile = require('winston-daily-rotate-file');
+const fs = require("fs");
+const winston = require("winston");
+const WinstonRotateFile = require("winston-daily-rotate-file");
 
-const { combine, timestamp, label, printf } = winston.format;
+const { combine, timestamp, printf } = winston.format;
 
 // converts the date object to local time string
 //const tsFormat = (date) => (new Date(date)).toLocaleDateString() + 'T' + (new Date(date)).toLocaleTimeString();
-const tsFormat = (date) => (new Date().toISOString());
+const tsFormat = (date) => (new Date(date).toISOString());
 
 
 const myFormat = printf(info => {
-  const message = (typeof(info.message) === 'object') ? JSON.stringify(info.message) : info.message;
+  const message = (typeof(info.message) === "object") ? JSON.stringify(info.message) : info.message;
   return `${tsFormat(info.timestamp)} - ${info.level}: ${message}`;
 });
 
-const logDir = 'logs';
+const logDir = "logs";
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
 }
 
 const transports = [];
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   // colorize the output to the console
   // winston console only if not production
   transports.push(
     new (winston.transports.Console)({
       timestamp: tsFormat,
       colorize: true,
-      level: 'debug', // level of log
+      level: "debug", // level of log
     })
   );
 } else {
@@ -37,9 +37,9 @@ if (process.env.NODE_ENV !== 'production') {
     new (WinstonRotateFile)({
       filename: `${logDir}/-results.log`, // filename to be created
       timestamp: tsFormat,
-      datePattern: 'yyyy-MM-dd',
+      datePattern: "yyyy-MM-dd",
       prepend: true, // prepends date to name of file
-      level: 'info', // level of log
+      level: "info", // level of log
     })
   );
 }
@@ -56,7 +56,7 @@ let Logger = winston.createLogger({
 });
 
 Logger.stream = {
-  write: (message, encoding) => {
+  write: (message) => {
     Logger.info(message);
   },
 };

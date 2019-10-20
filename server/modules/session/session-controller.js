@@ -47,7 +47,7 @@ async function createSession(sessionData, userData) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 /**
  * Queries all the registers in the Sesion table. Filters by the fields in queryData
@@ -70,7 +70,7 @@ async function getSessions(queryData) {
     console.error(error);
     return error;
   }
-};
+}
 
 /**
  * Starts a session and sends the socket to all users in the course room
@@ -94,14 +94,14 @@ async function start(sessionData) {
       activo: true,
     });
 
-    await session.addActualizacionesEstado(status.id);
+    await session.addActualizacionesEstado(sessionConfig.status.ACTIVE.id);
 
     //=====================//
     //     SEND SOCKET     //
     //=====================//
     const socketData = {
       id: session.id,
-      status: status.id,
+      status: sessionConfig.status.ACTIVE.id,
       paraleloId: session.dataValues.paraleloId,
     };
     process.emit("updateSessionStatus", socketData);
@@ -111,7 +111,7 @@ async function start(sessionData) {
     console.error(error);
     return error;
   }
-};
+}
 
 /**
   * Terminates an ACTIVE session and sends the socket to all users in the course room
@@ -135,14 +135,14 @@ async function end(sessionData) {
       activo: false,
     });
 
-    await session.addActualizacionesEstado(status.id);
+    await session.addActualizacionesEstado(sessionConfig.status.TERMINATED.id);
 
     //=====================//
     //     SEND SOCKET     //
     //=====================//
     const socketData = {
       id: session.id,
-      status: status.id,
+      status: sessionConfig.status.TERMINATED.id,
       paraleloId: session.dataValues.paraleloId,
     };
     process.emit("updateSessionStatus", socketData);
@@ -152,7 +152,7 @@ async function end(sessionData) {
     console.error(error);
     return error;
   }
-};
+}
 
 
 /**
@@ -182,7 +182,7 @@ async function getSessionData(sessionData, userData) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 /**
  * Returns the corresponding questions based on the role of the user making the request

@@ -47,7 +47,7 @@ async function registerStudent(studentData) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 /**
  * @param {object} professorData
@@ -91,7 +91,7 @@ async function registerProfessor(professorData) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 /**
  * Metodo para crear un registro de admin en la base de datos
@@ -127,7 +127,7 @@ async function registerAdmin(userData) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 /**
  * Validates the user's credentials and creates their token
@@ -160,7 +160,7 @@ async function login(email, password) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 /**
  * Gets the necessary user's data for the apps
@@ -180,9 +180,9 @@ async function getSessionData(userData) {
     return Promise.resolve(data);
   } catch (error) {
     console.error(error);
-    return Promie.reject(error);
+    return Promise.reject(error);
   }
-};
+}
 
 module.exports = {
   registerStudent,

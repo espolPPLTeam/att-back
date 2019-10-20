@@ -18,7 +18,7 @@ async function crearGrupo(datosGrupo, datosUsuario) {
     console.error(error);
     return Promise.reject(error);
   }
-};
+}
 
 async function anadirProfesorGrupo(idProfesor, idGrupo) {
   try {
@@ -33,7 +33,7 @@ async function anadirProfesorGrupo(idProfesor, idGrupo) {
       return Promise.reject("Usuario no existe");
     }
 
-    const resultado = await grupo.addProfesor(profesor.id);
+    await grupo.addProfesor(profesor.id);
     return Promise.resolve(true);
   } catch (error) {
     console.error(error);
@@ -54,7 +54,7 @@ async function anadirEstudianteGrupo(idEstudiante, idGrupo) {
       return Promise.reject("Usuario no existe");
     }
 
-    const resultado = await grupo.addEstudiante(estudiante.id);
+    await grupo.addEstudiante(estudiante.id);
     return Promise.resolve(true);
   } catch (error) {
     console.error(error);
