@@ -1,10 +1,10 @@
 const usuarios = [
   {
-    nombres: "Admin",
-    apellidos: "Admin",
+    name: "Admin",
+    lastName: "Admin",
     email: process.env.ATT_ADMIN_EMAIL,
-    clave: process.env.ATT_ADMIN_PASSWORD,
-    matricula: "201304614"
+    password: process.env.ATT_ADMIN_PASSWORD,
+    identification: "201304614"
   }
 ];
 
