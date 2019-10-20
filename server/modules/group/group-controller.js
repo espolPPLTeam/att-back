@@ -1,39 +1,38 @@
-const { Mysql } = require("./../../../db");
-const db = Mysql.db;
+const GroupService = require("./group-service");
+const UserService = require("../user/user-service");
 
 /**
-  * @param {Object} datosUsuario Datos del usuario que crea el paralelo
-  * @param {Number} datosUsuario.id ID del usuario
+  * @param {Object} userData Datos del usuario que crea el paralelo
+  * @param {Number} userData.id ID del usuario
   */
-async function crearGrupo(datosGrupo, datosUsuario) {
+async function createGroup(groupData, userData) {
   try {
-    const grupo = await db["Grupo"].create({
-      nombre: datosGrupo.nombre,
-      usuario_registro: datosUsuario.id
-    });
-    await grupo.setParalelo(datosGrupo.idParalelo);
+    const data = {
+      nombre: groupData.nombre,
+      usuario_registro: userData.id,
+      courseID: groupData.idParalelo,
+    };
+    const group = await GroupService.createGroup(data);
 
-    return Promise.resolve(grupo);
+    return Promise.resolve(group);
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
   }
 }
 
-async function anadirProfesorGrupo(idProfesor, idGrupo) {
+async function addProfessorToGroup(professorID, groupID) {
   try {
-    const grupoQuery = { id: idGrupo };
-    const grupo = await db["Grupo"].findOne({ where: grupoQuery });
-    if (!grupo) {
+    const group = await GroupService.getGroupByID(groupID);
+    if (!group) {
       return Promise.reject("Grupo no existe");
     }
-    const profesorQuery = { id: idProfesor };
-    const profesor = await db["Usuario"].findOne({ where: profesorQuery });
-    if (!profesor) {
+    const professor = await UserService.getUserByID(professorID);
+    if (!professor) {
       return Promise.reject("Usuario no existe");
     }
 
-    await grupo.addProfesor(profesor.id);
+    await group.addProfesor(professor.id);
     return Promise.resolve(true);
   } catch (error) {
     console.error(error);
@@ -41,20 +40,18 @@ async function anadirProfesorGrupo(idProfesor, idGrupo) {
   }
 }
 
-async function anadirEstudianteGrupo(idEstudiante, idGrupo) {
+async function addStudentToGroup(studentID, groupID) {
   try {
-    const grupoQuery = { id: idGrupo };
-    const grupo = await db["Grupo"].findOne({ where: grupoQuery });
-    if (!grupo) {
+    const group = await GroupService.getGroupByID(groupID);
+    if (!group) {
       return Promise.reject("Grupo no existe");
     }
-    const estudianteQuery = { id: idEstudiante };
-    const estudiante = await db["Usuario"].findOne({ where: estudianteQuery });
-    if (!estudiante) {
+    const student = await UserService.getUserByID(studentID);
+    if (!student) {
       return Promise.reject("Usuario no existe");
     }
 
-    await grupo.addEstudiante(estudiante.id);
+    await group.addEstudiante(student.id);
     return Promise.resolve(true);
   } catch (error) {
     console.error(error);
@@ -63,7 +60,7 @@ async function anadirEstudianteGrupo(idEstudiante, idGrupo) {
 }
 
 module.exports = {
-  crearGrupo,
-  anadirProfesorGrupo,
-  anadirEstudianteGrupo,
+  createGroup,
+  addProfessorToGroup,
+  addStudentToGroup,
 };

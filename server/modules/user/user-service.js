@@ -72,6 +72,15 @@ const UserService = {
       ],
     });
     return user;
+  },
+
+  /**
+   * @param {number} userID ID of the user to query
+   */
+  async getUserByID(userID) {
+    return await db[UserModel].findOne({
+      where: { id: userID },
+    });
   }
 
 };
