@@ -1,6 +1,7 @@
 const UserService = require("./user-service");
 const RoleService = require("../role/role-service");
 const CourseService = require("../course/course-service");
+const GroupService = require("../group/group-service");
 
 const authenticationService = require("../authentication/authentication-service");
 const userConfig = require("./user-config");
@@ -40,8 +41,16 @@ async function registerStudent(studentData) {
       if (course) {
         await user.addParalelo(studentData.courseID);
       }
+      if (studentData.groupID) {
+        const group = await GroupService.getGroupByID(studentData.groupID);
+        if (group) {
+          if (group.get("paralelo_id") == studentData.courseID) {
+            await user.addGrupo(group.get("id"));
+          }
+        }
+      }
     }
-    
+
     return Promise.resolve(user);
   } catch (error) {
     console.error(error);
