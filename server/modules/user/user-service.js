@@ -6,6 +6,7 @@ const UserModel = "Usuario";
 const RoleModel = "Rol";
 const CourseModel = "Paralelo";
 const SubjectModel = "Materia";
+const GroupModel = "Grupo";
 
 /**
  * Interface with the User model in the database
@@ -69,6 +70,10 @@ const UserService = {
             },
           ],
         },
+        {
+          model: db[GroupModel],
+          as: "grupos"
+        }
       ],
     });
     return user;

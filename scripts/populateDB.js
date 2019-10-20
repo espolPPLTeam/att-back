@@ -45,7 +45,7 @@ async function init() {
         const gruposParalelo = data.grupos.filter((grupo) => grupo.paralelo == paraleloCreado.codigo && grupo.materia == materia.codigo);
         for (let grupo of gruposParalelo) {
           grupo["idParalelo"] = paraleloCreado.id;
-          await groupController.crearGrupo(grupo, admin);
+          await groupController.createGroup(grupo, admin);
         }
       }
     }

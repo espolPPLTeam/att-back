@@ -3,6 +3,8 @@ const db = Mysql.db;
 
 const StudentQuestionModel = "PreguntaEstudiante";
 const UserModel = "Usuario";
+const GroupModel = "Grupo";
+
 /**
  * Interface with the User model in the database
  */
@@ -25,7 +27,13 @@ const StudentQuestionService = {
         {
           model: db[UserModel],
           as: "creador",
-          attributes: usuarioProjection
+          attributes: usuarioProjection,
+          include: [
+            {
+              model: db[GroupModel],
+              as: "grupos"
+            }
+          ]
         }
       ],
     });

@@ -45,7 +45,7 @@ async function registerStudent(studentData) {
         const group = await GroupService.getGroupByID(studentData.groupID);
         if (group) {
           if (group.get("paralelo_id") == studentData.courseID) {
-            await user.addGrupo(group.get("id"));
+            await group.addUsuario(user.get("id"));
           }
         }
       }

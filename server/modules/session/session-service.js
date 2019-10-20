@@ -7,6 +7,7 @@ const SubjectModel = "Materia";
 const SessionStatusModel = "EstadoSesion";
 const UserModel = "Usuario";
 const UserSessionModel = "UsuarioSesion";
+const GroupModel = "Grupo";
 
 /**
  * Interface with the User model in the database

@@ -19,12 +19,8 @@ module.exports = (sequelize, DataTypes) => {
   Grupo.associate = (models) => {
     Grupo.belongsTo(models.Paralelo);
     Grupo.belongsToMany(models.Usuario, {
-      through: "estudiantes_grupos",
-      as: "Estudiante",
-    });
-    Grupo.belongsToMany(models.Usuario, {
-      through: "profesores_grupos",
-      as: "Profesor",
+      through: "usuarios_grupos",
+      as: "usuarios",
     });
     Grupo.belongsTo(models.Usuario, {
       as: "usuarioRegistro",

@@ -105,15 +105,14 @@ module.exports = (sequelize, DataTypes) => {
   Usuario.associate = (models) => {
     Usuario.belongsTo(models.Rol);
     Usuario.belongsToMany(models.Paralelo, { through: "paralelos_usuarios" });
-    Usuario.belongsToMany(models.Grupo, { through: "estudiantes_grupos" });
-    Usuario.belongsToMany(models.Grupo, { through: "profesores_grupos" });
+    Usuario.belongsToMany(models.Grupo, { through: "usuarios_grupos", as: "grupos" });
     Usuario.belongsToMany(models.Sesion, { through: models.UsuarioSesion });
     Usuario.hasMany(models.PreguntaEstudiante, {
       as: "Creador",
       foreignKey: "creador_id"
     });
     Usuario.hasMany(models.PreguntaEstudiante, {
-      as: "Calificador",
+      as: "calificador",
       foreignKey: "calificador_id"
     });
     Usuario.hasMany(models.PreguntaProfesor, {
